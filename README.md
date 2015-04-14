@@ -1,6 +1,8 @@
 # pycondor
 Python script to manage some Condor Soaring files such as task
 
+## Usage
+
     $ python pycondor_task.py --filename default.fpl --output xls
     Read 'default.fpl'
     Condor version: 1150
@@ -21,3 +23,17 @@ Python script to manage some Condor Soaring files such as task
     5   96078.7265625   450   3000           0     0
     Output 'default.xls'
 
+##Dependencies
+* Python 2.7 or Python 3.4
+
+You might install a scientific Python distribution such as [Anaconda Python](http://continuum.io/).
+* Pandas (Numpy, ...)
+* matplotlib
+* xlwt-future (for Excel .xls output with Python 3)
+* click
+
+Use
+    $ conda install name_of_the_package
+or
+    $ pip install name_of_the_package
+to install missing libraries
