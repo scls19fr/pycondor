@@ -103,7 +103,8 @@ def output_task_from_df(df_task, filename_base, output, outdir):
         print("Output '%s'" % filename_out)
         df_task.to_csv(filename_out)
     elif output.lower() in ['tsk', 'xcsoar']:
-        env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
+        template_dir = os.path.join(os.path.dirname(__file__), 'templates') 
+        env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
         template = env.get_template('xcsoar6.tpl')
         d = {'variable': 'Hello template'}
         rendered = template.render(**d)
