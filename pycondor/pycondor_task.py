@@ -39,6 +39,7 @@ import matplotlib as mpl
 #mpl.use('Agg')
 import matplotlib.pyplot as plt
 
+import jinja2
 
 def turn_point(config, id):
     TP_properties = ["Name", "PosX", "PosY", "PosZ", "Airport", "SectorType", "Radius",

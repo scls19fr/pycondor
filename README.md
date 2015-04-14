@@ -33,7 +33,10 @@ You might install a scientific Python distribution such as [Anaconda Python](htt
 * click
 
 Use
+
     $ conda install name_of_the_package
+
 or
     $ pip install name_of_the_package
-to install missing libraries
+
+to install missing libraries.
