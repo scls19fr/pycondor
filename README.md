@@ -3,7 +3,7 @@ Python script to manage some Condor Soaring files such as task
 
 ## Usage
 
-    $ python pycondor_task.py --filename default.fpl --output xls
+    $ python pycondor_task.py sample/default.fpl --output xls
     Read 'default.fpl'
     Condor version: 1150
        Airport Altitude Angle Azimuth Height              Name            PosX  \
