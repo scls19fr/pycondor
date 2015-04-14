@@ -41,6 +41,8 @@ import matplotlib.pyplot as plt
 
 import jinja2
 
+import geopy
+
 def turn_point(config, id):
     TP_properties = ["Name", "PosX", "PosY", "PosZ", "Airport", "SectorType", "Radius",
     "Angle", "Altitude", "Width", "Height", "Azimuth"]
@@ -100,8 +102,16 @@ def output_task_from_df(df_task, filename_base, output, outdir):
         filename_out = os.path.join(outdir, filename_base + '.csv')
         print("Output '%s'" % filename_out)
         df_task.to_csv(filename_out)
-    #elif output.lower() in ['tsk', 'xcsoar']:
-    #    raise(NotImplementedError("XCSoar task format not supported"))
+    elif output.lower() in ['tsk', 'xcsoar']:
+        env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
+        template = env.get_template('xcsoar6.tpl')
+        d = {'variable': 'Hello template'}
+        rendered = template.render(**d)
+        filename_out = os.path.join(outdir, filename_base + '.tsk')
+        print("Output '%s'" % filename_out)
+        with open(filename_out, "wb") as fd:
+            fd.write(rendered)
+        raise(NotImplementedError("XCSoar task format is not yet supported (WIP)"))
     elif output in ['matplotlib', 'mpl', 'png', 'jpg', 'bmp']:
         fig, ax = plt.subplots(1, 1)
         ax.scatter(df_task['PosX'],df_task['PosY'])
@@ -124,8 +134,12 @@ def output_task_from_df(df_task, filename_base, output, outdir):
 
 supported_input_extensions = ['.fpl']
 supported_versions = ['1150']
-supported_output_formats = ['Excel', 'xls', 'xlsx', 'Excelx', 'CSV', \
-    'matplotlib', 'mpl', 'bmp', 'png', 'jpg']
+supported_output_formats = ['Excel', 'xls',
+    'xlsx', 'Excelx',
+    'CSV', \
+    'matplotlib', 'mpl', 'bmp', 'png', 'jpg',
+    'tsk', 'xcsoar'
+    ]
 
 @click.command()
 @click.option('--debug/--no-debug', default=False, help="debug mode")
