@@ -1,1 +1,1 @@
-python.exe pycondor_task.py samples/default.fpl --debug
+python.exe pycondor_task.py samples/default.fpl --debug --output xls

@@ -41,7 +41,7 @@ import matplotlib.pyplot as plt
 
 import jinja2
 
-import geopy
+#import geopy
 
 def turn_point(config, id):
     TP_properties = ["Name", "PosX", "PosY", "PosZ", "Airport", "SectorType", "Radius",
