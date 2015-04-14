@@ -37,6 +37,7 @@ Use
     $ conda install name_of_the_package
 
 or
+
     $ pip install name_of_the_package
 
 to install missing libraries.
