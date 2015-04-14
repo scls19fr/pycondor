@@ -1,6 +1,8 @@
 # pycondor
 Python script to manage some Condor Soaring files such as task
 
+CAUTION: WORK IN PROGRESS - NOT USABLE FOR NOW
+
 ## Usage
 
     $ python pycondor_task.py sample/default.fpl --output xls
