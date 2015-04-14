@@ -80,7 +80,7 @@ def create_task_dataframe(config):
 
     return(df_task)
 
-def output_task_from_df(df_task, filename_base, output):
+def output_task_from_df(df_task, filename_base, output, outdir):
     output = output.lower()
 
     if output not in supported_output_formats:
@@ -88,15 +88,15 @@ def output_task_from_df(df_task, filename_base, output):
             % (output, supported_output_formats)))
 
     if output in ['xls', 'excel']:
-        filename_out = filename_base + '.xls'
+        filename_out = os.path.join(outdir, filename_base + '.xls')
         print("Output '%s'" % filename_out)
         df_task.to_excel(filename_out)
     elif output in ['xlsx', 'excelx']:
-        filename_out = filename_base + '.xlsx'
+        filename_out = os.path.join(outdir, filename_base + '.xlsx')
         print("Output '%s'" % filename_out)
         df_task.to_excel(filename_out)
     elif output in ['csv']:
-        filename_out = filename_base + '.csv'
+        filename_out = os.path.join(outdir, filename_base + '.csv')
         print("Output '%s'" % filename_out)
         df_task.to_csv(filename_out)
     #elif output.lower() in ['tsk', 'xcsoar']:
@@ -115,7 +115,7 @@ def output_task_from_df(df_task, filename_base, output):
             print("Display task")
             plt.show()
         if output in ['png', 'jpg', 'bmp']:
-            filename_out = filename_base + '.' + output
+            filename_out = os.path.join(outdir, filename_base + '.' + output)
             print("Output '%s'" % filename_out)
             plt.savefig(filename_out)
     else:
@@ -128,10 +128,15 @@ supported_output_formats = ['Excel', 'xls', 'xlsx', 'Excelx', 'CSV', \
 
 @click.command()
 @click.option('--debug/--no-debug', default=False, help="debug mode")
-@click.option('--filename', default='default.fpl')
+@click.argument('filename')
 @click.option('--output', default='xls')
-def main(debug, filename, output):
-    filename_base, filename_ext = os.path.splitext(filename)
+@click.option('--outdir', default='')
+def main(debug, filename, output, outdir):
+    filename_base, filename_ext = os.path.splitext(os.path.basename(filename))
+    basepath = os.path.dirname(__file__)
+    #basepath = os.path.dirname(os.path.abspath(__file__))
+    if outdir=='':
+        outdir = os.path.join(basepath, 'out')
     if debug:        
         assert filename_ext in supported_input_extensions, \
         "File extension of '%s' is '%s' but supported extension must be in %s" \
@@ -150,7 +155,7 @@ def main(debug, filename, output):
     df_task = create_task_dataframe(config)
     print(df_task)
 
-    output_task_from_df(df_task, filename_base, output)
+    output_task_from_df(df_task, filename_base, output, outdir)
 
     plt.show()
 
