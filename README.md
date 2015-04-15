@@ -38,7 +38,7 @@ CAUTION: WORK IN PROGRESS - NOT USABLE FOR NOW
 ![default task plot](pycondor/out/default.png)
 	
 ##Dependencies
-* Windows (because of DLL function calls to NaviCon.dll)
+* Windows (because of DLL function calls to `NaviCon.dll`)
 * Python 2.7 or Python 3.4
 
 You might install a scientific Python distribution such as [Anaconda Python](http://continuum.io/).
