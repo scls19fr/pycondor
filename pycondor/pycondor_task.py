@@ -150,14 +150,16 @@ supported_output_formats = ['Excel', 'xls',
     'matplotlib', 'mpl', 'bmp', 'png', 'jpg',
     'tsk', 'xcsoar'
     ]
+program_files = os.environ["ProgramFiles"] #"ProgramFiles(x86)" "ProgramW6432"
+condor_path_default = os.path.join(program_files, "Condor")
 
 @click.command()
 @click.option('--debug/--no-debug', default=False, help="debug mode")
 @click.argument('filename')
-@click.option('--output', default='xls')
-@click.option('--outdir', default='')
-@click.option('--condor_path', default='')
-@click.option('--landscape', default='alps_XL')
+@click.option('--output', default='xls', help="Output type in %s" % supported_output_formats)
+@click.option('--outdir', default='', help="Output directory - default is 'script_directory\out'")
+@click.option('--condor_path', default='', help="Condor Soaring installation path - default is %s" % condor_path_default)
+@click.option('--landscape', default='alps_XL', help="Landscape name - should be inside 'Condor\Landscapes' directory (it's also the name of a .trn file)")
 def main(debug, filename, output, outdir, condor_path, landscape):
     filename_base, filename_ext = os.path.splitext(os.path.basename(filename))
     basepath = os.path.dirname(__file__)
@@ -169,8 +171,7 @@ def main(debug, filename, output, outdir, condor_path, landscape):
         "File extension of '%s' is '%s' but supported extension must be in %s" \
         % (filename, filename_ext, supported_input_extensions)
     if condor_path=='':
-        program_files = os.environ["ProgramFiles"] #"ProgramFiles(x86)" "ProgramW6432"
-        condor_path = os.path.join(program_files, "Condor")
+        condor_path = condor_path_default
         
     print("Read '%s'" % filename)
     config = configparser.ConfigParser()
