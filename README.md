@@ -38,6 +38,11 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 	Output 'out\default.xls'	
 
 ![default task plot](pycondor/out/default.png)
+
+## Help
+You can get command line help using:
+
+	C:\...\pycondor> python.exe pycondor_task.py --help
 	
 ##Dependencies
 * Windows (because of DLL function calls to `NaviCon.dll`)
