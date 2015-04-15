@@ -43,6 +43,20 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 You can get command line help using:
 
 	C:\...\pycondor> python.exe pycondor_task.py --help
+
+	Usage: pycondor_task.py [OPTIONS] FILENAME
+
+	Options:
+	  --debug / --no-debug  debug mode
+	  --output TEXT         Output type in ['Excel', 'xls', 'xlsx', 'Excelx',
+							'CSV', 'matplotlib', 'mpl', 'bmp', 'png', 'jpg',
+							'tsk', 'xcsoar']
+	  --outdir TEXT         Output directory - default is 'script_directory\out'
+	  --condor_path TEXT    Condor Soaring installation path - default is
+							C:\Program Files (x86)\Condor
+	  --landscape TEXT      Landscape name - should be inside 'Condor\Landscapes'
+							directory (it's also the name of a .trn file)
+	  --help                Show this message and exit.	
 	
 ##Dependencies
 * Windows (because of DLL function calls to `NaviCon.dll`)
