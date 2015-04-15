@@ -42,11 +42,15 @@ CAUTION: WORK IN PROGRESS - NOT USABLE FOR NOW
 * Python 2.7 or Python 3.4
 
 You might install a scientific Python distribution such as [Anaconda Python](http://continuum.io/).
-* Pandas (Numpy, ...)
-* click (Command Line Interface Toolkit)
-* matplotlib
-* xlwt (for Excel .xls output with Python 2.x)
-* xlwt-future (for Excel .xls output with Python 3.x)
+Using such a distribution the following libraries should ever be installed:
+* Numpy http://www.numpy.org/
+* Pandas http://pandas.pydata.org/
+* matplotlib http://matplotlib.org/
+
+You will probably need to install missing libraries such as:
+* click (Command Line Interface Creation kit) http://click.pocoo.org/
+* xlwt (for Excel .xls output with Python 2.x) http://www.python-excel.org/
+* xlwt-future (for Excel .xls output with Python 3.x) https://pypi.python.org/pypi/xlwt-future
 
 Use
 
