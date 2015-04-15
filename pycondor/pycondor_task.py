@@ -41,6 +41,7 @@ import matplotlib.pyplot as plt
 
 import jinja2
 
+from ctypes import WinDLL, c_char_p, c_int, c_float
 #import geopy
 
 def turn_point(config, id):
@@ -115,14 +116,22 @@ def output_task_from_df(df_task, filename_base, output, outdir):
         raise(NotImplementedError("XCSoar task format is not yet supported (WIP)"))
     elif output in ['matplotlib', 'mpl', 'png', 'jpg', 'bmp']:
         fig, ax = plt.subplots(1, 1)
-        ax.scatter(df_task['PosX'],df_task['PosY'])
-        ax.plot(df_task['PosX'],df_task['PosY'])
-        delta_PosX = df_task['PosX'].max() - df_task['PosX'].min()
-        delta_PosY = df_task['PosY'].max() - df_task['PosY'].min()
+        #ax.scatter(df_task['PosX'],df_task['PosY'])
+        #ax.plot(df_task['PosX'],df_task['PosY'])
+        #delta_PosX = df_task['PosX'].max() - df_task['PosX'].min()
+        #delta_PosY = df_task['PosY'].max() - df_task['PosY'].min()
+        #for i, tp in df_task.iterrows():
+        #    ax.annotate(i, xy=(tp['PosX']+delta_PosX/40, tp['PosY']+delta_PosY/40))
+        #ax.set_xlabel('PosX')
+        #ax.set_ylabel('PosY')
+        ax.scatter(df_task['Lon'],df_task['Lat'])
+        ax.plot(df_task['Lon'],df_task['Lat'])
+        delta_Lon = df_task['Lon'].max() - df_task['Lon'].min()
+        delta_Lat = df_task['Lat'].max() - df_task['Lat'].min()
         for i, tp in df_task.iterrows():
-            ax.annotate(i, xy=(tp['PosX']+delta_PosX/40, tp['PosY']+delta_PosY/40))
-        ax.set_xlabel('PosX')
-        ax.set_ylabel('PosY')
+             ax.annotate(i, xy=(tp['Lon']+delta_Lon/40, tp['Lat']+delta_Lat/40))
+        ax.set_xlabel('Lon')
+        ax.set_ylabel('Lat')
         if output in ['matplotlib', 'mpl']:
             print("Display task")
             plt.show()
@@ -147,7 +156,9 @@ supported_output_formats = ['Excel', 'xls',
 @click.argument('filename')
 @click.option('--output', default='xls')
 @click.option('--outdir', default='')
-def main(debug, filename, output, outdir):
+@click.option('--condor_path', default='')
+@click.option('--landscape', default='alps_XL')
+def main(debug, filename, output, outdir, condor_path, landscape):
     filename_base, filename_ext = os.path.splitext(os.path.basename(filename))
     basepath = os.path.dirname(__file__)
     #basepath = os.path.dirname(os.path.abspath(__file__))
@@ -157,6 +168,10 @@ def main(debug, filename, output, outdir):
         assert filename_ext in supported_input_extensions, \
         "File extension of '%s' is '%s' but supported extension must be in %s" \
         % (filename, filename_ext, supported_input_extensions)
+    if condor_path=='':
+        program_files = os.environ["ProgramFiles"] #"ProgramFiles(x86)" "ProgramW6432"
+        condor_path = os.path.join(program_files, "Condor")
+        
     print("Read '%s'" % filename)
     config = configparser.ConfigParser()
     config.read(filename)
@@ -169,6 +184,50 @@ def main(debug, filename, output, outdir):
     print("Condor version: %s" % condor_version)
 
     df_task = create_task_dataframe(config)
+    
+    dll_filename = os.path.join(condor_path, 'NaviCon.dll')
+    print("Using functions from '%s'" % dll_filename)
+    print("With landscape '%s'" % landscape)
+    print("")
+    trn_path = os.path.join(condor_path, "Landscapes", landscape, landscape + ".trn")
+
+    mydll = WinDLL(dll_filename)
+
+    mydll.NaviConInit.argtypes = [c_char_p]
+    mydll.NaviConInit.restype = c_int
+
+    mydll.GetMaxX.argtypes = []
+    mydll.GetMaxX.restype = c_float
+
+    mydll.GetMaxY.argtypes = []
+    mydll.GetMaxY.restype = c_float
+
+    mydll.XYToLon.argtypes = [c_float, c_float]
+    mydll.XYToLon.restype = c_float
+
+    mydll.XYToLat.argtypes = [c_float, c_float]
+    mydll.XYToLat.restype = c_float
+
+    mydll.NaviConInit(trn_path)
+
+    max_x, max_y = mydll.GetMaxX(), mydll.GetMaxY()
+    print("MaxX: %f" % max_x)
+    print("MaxY: %f" % max_y)
+
+    print("XYToLon(0.0,0.0): %f" % mydll.XYToLon(0.0,0.0))
+    print("XYToLat(0.0,0.0): %f" % mydll.XYToLat(0.0,0.0))
+    print("XYToLon(%f,%f): %f" % (max_x, max_y, mydll.XYToLon(max_x,max_y)))
+    print("XYToLat(%f,%f): %f" % (max_x, max_y, mydll.XYToLat(max_x,max_y)))
+    print("")
+    
+    df_task["Lat"] = 0.0
+    df_task["Lon"] = 0.0
+    
+    for i, tp in df_task.iterrows():
+        pos_x, pos_y = tp['PosX'], tp['PosY']
+        df_task.loc[i,'Lat'] = mydll.XYToLat(pos_x, pos_y)
+        df_task.loc[i,'Lon'] = mydll.XYToLon(pos_x, pos_y)
+        
     print(df_task)
 
     output_task_from_df(df_task, filename_base, output, outdir)
