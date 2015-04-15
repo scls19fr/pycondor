@@ -119,8 +119,8 @@ def output_task_from_df(df_task, filename_base, output, outdir):
         ax.plot(df_task['PosX'],df_task['PosY'])
         delta_PosX = df_task['PosX'].max() - df_task['PosX'].min()
         delta_PosY = df_task['PosY'].max() - df_task['PosY'].min()
-        for i in df_task.index:
-            ax.annotate(i, xy=(df_task['PosX'][i]+delta_PosX/40, df_task['PosY'][i]+delta_PosY/40))
+        for i, tp in df_task.iterrows():
+            ax.annotate(i, xy=(tp['PosX']+delta_PosX/40, tp['PosY']+delta_PosY/40))
         ax.set_xlabel('PosX')
         ax.set_ylabel('PosY')
         if output in ['matplotlib', 'mpl']:
