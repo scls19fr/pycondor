@@ -2,6 +2,8 @@
 Python script to manage some Condor Soaring files such as task
 
 CAUTION: WORK IN PROGRESS - NOT USABLE FOR NOW
+see [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo)
+any help is welcome.
 
 ## Usage
 
