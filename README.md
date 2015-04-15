@@ -34,6 +34,8 @@ CAUTION: WORK IN PROGRESS - NOT USABLE FOR NOW
 	4   134922.265625  2159    500           0     0  46.589077  11.974069
 	5   96078.7265625   450   3000           0     0  46.250069  11.526401
 	Output 'out\default.xls'	
+
+![default task plot](pycondor/out/default.png)
 	
 ##Dependencies
 * Windows (because of DLL function calls to NaviCon.dll)
