@@ -12,8 +12,7 @@
 		<Waypoint altitude="{{ tp.Altitude }}" comment="{{ tp.Comment }}" id="{{ id }}" name="{{ tp.Name }}">
 			<Location latitude="{{ tp.Lat }}" longitude="{{ tp.Lon }}"/>
 		</Waypoint>
-		<ObservationZone radius="1000" type="Cylinder"/>
+		<ObservationZone radius="{{ tp.ObservationZone.Radius }}" type=" tp.ObservationZone.Type "/>
 	</Point>
 {% endfor %}
-
 </Task>

@@ -31,6 +31,10 @@ class SettingsTask(object):
     def __init__(self):
         pass
 
+class ObservationZone(object):
+    Radius = 1000
+    Type = 'Cylinder'
+
 def main():
     filename = "out/default.xls"
     df_task = pd.read_excel(filename)
@@ -58,6 +62,7 @@ def main():
 
     df_task["Comment"] = ""
     df_task["Wpt_id"] = df_task.index.map(lambda i: "_" + str(i))
+    df_task["ObservationZone"] = ObservationZone()
 
     #df_task["Type"] = PointType.Undef
     for i, tp in df_task.iterrows():
