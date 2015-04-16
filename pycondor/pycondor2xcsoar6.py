@@ -19,6 +19,7 @@ from enum import Enum # enum34 for Python 2.x
 
 # constants from
 #https://github.com/Turbo87/aerofiles/blob/master/aerofiles/xcsoar/constants.py
+#and from http://git.xcsoar.org/cgit/jmw/xcsoar.git/plain/src/Task/TypeStrings.cpp
 
 class MyEnum(Enum):
     def __str__(self):
