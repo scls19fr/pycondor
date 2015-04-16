@@ -17,7 +17,7 @@ import jinja2
 
 from enum import Enum # enum34 for Python 2.x
 
-PointType = Enum('PointType', 'Start Finish Area Turn')
+PointType = Enum('PointType', 'Undef Start Finish Area Turn')
 
 class SettingsTask(object):
     AATEnabled = False
@@ -53,23 +53,32 @@ def main():
     }
     for col, typ in d_convert.items():
         df_task[col] = df_task[col].astype(typ)
-    print(df_task)
-    print(df_task.dtypes)
-    #df_task["Type"] = PointType.Turn
-    #for i, tp in df_task.iterrows():
-    #    pos_x, pos_y = df_task['PosX'], df_task['PosY']
-    #    df_task.loc[i,'Lat'] = mydll.XYToLat(pos_x, pos_y)
 
     settings_task = SettingsTask()
 
-    
+    df_task["Comment"] = ""
+    df_task["Wpt_id"] = df_task.index.map(lambda i: "_" + str(i))
 
+    #df_task["Type"] = PointType.Undef
+    for i, tp in df_task.iterrows():
+        if i==0:
+            df_task.loc[i,'Type'] = PointType.Start
+        elif i==df_task.index[-1]:
+            df_task.loc[i,'Type'] = PointType.Finish
+        elif settings_task.AATEnabled:
+            df_task.loc[i,'Type'] = PointType.Area
+        else:
+            df_task.loc[i,'Type'] = PointType.Turn
+
+    print(df_task)
+    print(df_task.dtypes)
+    
     template_dir = os.path.join(os.path.dirname(__file__), 'templates') 
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
     template = env.get_template('xcsoar6.tpl')
     d = {
-        'variable': 'Hello template',
-        'settings_task': settings_task
+        'settings_task': settings_task,
+        'df_task': df_task
     }
     rendered = template.render(**d)
     #rendered = template.render(settings_task=settings_task)

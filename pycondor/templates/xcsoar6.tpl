@@ -7,6 +7,13 @@
   fai_finish="0" min_points="{{ min_points }}"
   max_points="10" homogeneous_tps="0" is_closed="{{ is_closed }}">
 
-{{ variable }}
+{% for id, tp in df_task.iterrows() %}
+	<Point type="{{ tp.Type.name }}">
+		<Waypoint altitude="{{ tp.Altitude }}" comment="{{ tp.Comment }}" id="{{ id }}" name="{{ tp.Name }}">
+			<Location latitude="{{ tp.Lat }}" longitude="{{ tp.Lon }}"/>
+		</Waypoint>
+		<ObservationZone radius="1000" type="Cylinder"/>
+	</Point>
+{% endfor %}
 
 </Task>
