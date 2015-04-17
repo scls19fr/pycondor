@@ -38,7 +38,7 @@ import matplotlib as mpl
 #mpl.use('Agg')
 import matplotlib.pyplot as plt
 
-from task import create_task_dataframe
+from task import create_task_dataframe, output_task_from_df
 
 from ctypes import WinDLL, c_char_p, c_int, c_float
 
