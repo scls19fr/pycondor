@@ -3,11 +3,11 @@ Python script to manage some Condor Soaring files such as task
 
 ![condor sample task](screenshots/condor.jpg)
 
+## Usage
+
 CAUTION: WORK IN PROGRESS - NOT USABLE FOR NOW
 
 See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
-
-## Usage
 
 	C:\...\pycondor>python.exe condor2task.py samples/default.fpl --debug --output xls
 	Read 'samples/default.fpl'
@@ -52,12 +52,15 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 ### Google Earth output (kml)
 ![google earth plot](screenshots/google_earth.jpg)
 
+### XCSoar (tsk)
+![XCSoar](screenshots/xcsoar.jpg)
+
 ## Help
 You can get command line help using:
 
-	C:\...\pycondor> python.exe pycondor_task.py --help
+	C:\...\pycondor> python.exe condor2task.py --help
 
-	Usage: pycondor_task.py [OPTIONS] FILENAME
+	Usage: condor2task.py [OPTIONS] FILENAME
 
 	Options:
 	  --debug / --no-debug  debug mode
