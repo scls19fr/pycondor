@@ -37,7 +37,11 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 	5   96078.7265625   450   3000           0     0  46.250069  11.526401
 	Output 'out\default.xls'	
 
+### Matplotlib output (png)
 ![default task plot](pycondor/out/default.png)
+
+### Google Earth output (kml)
+![default task plot](screenshots/google_earth.png)
 
 ## Help
 You can get command line help using:
