@@ -14,7 +14,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 from aerofiles.xcsoar import Writer, TaskType, PointType, ObservationZoneType, AltitudeReference
-from observationzone import ObservationZone
+from observation_zone import ObservationZone
 
 from lxml import etree
 from pykml.parser import Schema
