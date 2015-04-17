@@ -21,6 +21,8 @@ Dependencies
  - matplotlib
  - xlwt-future (for Excel .xls output with Python 3)
 """
+from constants import supported_input_extensions, \
+    supported_versions, supported_output_formats, program_files, condor_path_default
 
 import click
 
@@ -72,16 +74,7 @@ def init_navicon_dll(condor_path, landscape):
 
 #import geopy
 
-supported_input_extensions = ['.fpl']
-supported_versions = ['1150']
-supported_output_formats = ['Excel', 'xls',
-    'xlsx', 'Excelx',
-    'CSV', \
-    'matplotlib', 'mpl', 'bmp', 'png', 'jpg',
-    'tsk', 'xcsoar'
-    ]
-program_files = os.environ["ProgramFiles"] #"ProgramFiles(x86)" "ProgramW6432"
-condor_path_default = os.path.join(program_files, "Condor")
+
 
 @click.command()
 @click.option('--debug/--no-debug', default=False, help="debug mode")
