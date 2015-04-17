@@ -52,6 +52,9 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 ### Google Earth output (kml)
 ![google earth plot](screenshots/google_earth.jpg)
 
+### XCSoar (tsk)
+![XCSoar](screenshots/xcsoar.jpg)
+
 ## Help
 You can get command line help using:
 
