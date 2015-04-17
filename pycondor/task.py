@@ -146,16 +146,9 @@ def output_task_from_df(df_task, filename_base, output, outdir):
         print("Output '%s'" % filename_out)
         df_task.to_csv(filename_out)
     elif output.lower() in ['tsk', 'xcsoar']:
-        template_dir = os.path.join(os.path.dirname(__file__), 'templates') 
-        env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
-        template = env.get_template('xcsoar6.tpl')
-        d = {'variable': 'Hello template'}
-        rendered = template.render(**d)
-        filename_out = os.path.join(outdir, filename_base + '.tsk')
-        print("Output '%s'" % filename_out)
-        with open(filename_out, "wb") as fd:
-            fd.write(rendered)
-        raise(NotImplementedError("XCSoar task format is not yet supported (WIP)"))
+        task_to_xcsoar(df_task, outdir, filename_base)
+    elif output.lower() in ['kml', 'google earth', 'ge', 'googleearth']:
+        task_to_kml(df_task, outdir, filename_base)
     elif output in ['matplotlib', 'mpl', 'png', 'jpg', 'bmp']:
         fig, ax = plt.subplots(1, 1)
         #ax.scatter(df_task['PosX'],df_task['PosY'])
