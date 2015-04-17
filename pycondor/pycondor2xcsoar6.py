@@ -15,50 +15,9 @@ import decimal
 
 #import jinja2
 
-from task import task_to_kml, task_to_xcsoar
+from task import task_to_kml, task_to_xcsoar, add_observation_zone
 from aerofiles.xcsoar import Writer, TaskType, PointType, ObservationZoneType, AltitudeReference
-
-# see https://github.com/Turbo87/aerofiles/blob/master/aerofiles/xcsoar/constants.py
-class ObservationZone:
-    def __init__(self, **kw):
-        assert 'type' in kw
-
-        self.type = kw['type']
-
-        if kw['type'] == ObservationZoneType.LINE:
-            assert 'length' in kw
-            self.length = kw['length']
-
-        elif kw['type'] == ObservationZoneType.CYLINDER:
-            assert 'radius' in kw
-            self.radius = kw['radius']
-
-        elif kw['type'] == ObservationZoneType.SECTOR:
-            assert 'radius' in kw
-            assert 'start_radial' in kw
-            assert 'end_radial' in kw
-            self.radius = kw['radius']
-            self.start_radial = kw['start_radial']
-            self.end_radial = kw['end_radial']
-
-        elif kw['type'] == ObservationZoneType.SYMMETRIC_QUADRANT:
-            assert 'radius' in kw
-            self.radius = kw['radius']
-
-        elif kw['type'] == ObservationZoneType.CUSTOM_KEYHOLE:
-            assert 'radius' in kw
-            assert 'inner_radius' in kw
-            assert 'angle' in kw
-            self.radius = kw['radius']
-            self.inner_radius = kw['inner_radius']
-            self.angle = kw['angle']
-
-    def __str__(self):
-        s = self.type + " "
-        for key, val in self.__dict__.items():
-            if key!="type":
-                s += "%s: %s" % (key, val)
-        return(s)
+from observationzone import ObservationZone
 
 class SettingsTask(object):
     AATEnabled = False
@@ -78,8 +37,6 @@ class SettingsTask(object):
 
     def __init__(self):
         pass
-
-
 
 def main():
     outdir = "out"
@@ -112,19 +69,7 @@ def main():
     df_task["Comment"] = ""
     df_task["Wpt_id"] = df_task.index.map(lambda i: "_" + str(i))
 
-    for i, tp in df_task.iterrows():
-        if i==0:
-            df_task.loc[i,'Type'] = PointType.START
-            df_task.loc[i, 'ObservationZone'] = ObservationZone(type=ObservationZoneType.CYLINDER, radius=500)
-        elif i==df_task.index[-1]:
-            df_task.loc[i,'Type'] = PointType.FINISH
-            df_task.loc[i, 'ObservationZone'] = ObservationZone(type=ObservationZoneType.LINE, length=500)
-        elif settings_task.AATEnabled:
-            df_task.loc[i,'Type'] = PointType.AREA
-            df_task.loc[i, 'ObservationZone'] = ObservationZone(type=ObservationZoneType.CYLINDER, radius=1000)
-        else:
-            df_task.loc[i,'Type'] = PointType.TURN
-            df_task.loc[i, 'ObservationZone'] = ObservationZone(type=ObservationZoneType.CYLINDER, radius=1000)
+    df_task = add_observation_zone(settings_task, df_task)
 
     print(df_task)
     print(df_task.dtypes)
