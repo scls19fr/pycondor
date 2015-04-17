@@ -22,7 +22,10 @@ Dependencies
  - xlwt-future (for Excel .xls output with Python 3)
 """
 from constants import supported_input_extensions, \
-    supported_versions, supported_output_formats, program_files, condor_path_default
+    supported_versions, supported_output_formats
+
+from constants_windows import program_files, \
+    condor_path_default
 
 import click
 
@@ -39,6 +42,7 @@ import decimal
 import matplotlib as mpl
 #mpl.use('Agg')
 import matplotlib.pyplot as plt
+
 
 from task import create_task_dataframe, output_task_from_df
 
