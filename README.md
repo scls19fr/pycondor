@@ -1,6 +1,8 @@
 # pycondor
 Python script to manage some Condor Soaring files such as task
 
+![condor sample task](screenshots/condor.jpg)
+
 CAUTION: WORK IN PROGRESS - NOT USABLE FOR NOW
 
 See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
@@ -38,10 +40,10 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 	Output 'out\default.xls'	
 
 ### Matplotlib output (png)
-![default task plot](pycondor/out/default.png)
+![matplotlib plot](pycondor/out/default.png)
 
 ### Google Earth output (kml)
-![default task plot](screenshots/google_earth.jpg)
+![google earth plot](screenshots/google_earth.jpg)
 
 ## Help
 You can get command line help using:
