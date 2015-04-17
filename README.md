@@ -55,9 +55,9 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 ## Help
 You can get command line help using:
 
-	C:\...\pycondor> python.exe pycondor_task.py --help
+	C:\...\pycondor> python.exe condor2task.py --help
 
-	Usage: pycondor_task.py [OPTIONS] FILENAME
+	Usage: condor2task.py [OPTIONS] FILENAME
 
 	Options:
 	  --debug / --no-debug  debug mode
