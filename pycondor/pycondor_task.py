@@ -32,7 +32,6 @@ try:
 except ImportError:
     import ConfigParser as configparser
 
-import decimal
 import pandas as pd
 import decimal
 import matplotlib as mpl

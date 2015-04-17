@@ -3,6 +3,13 @@
 
 import os
 
+import decimal
+
+import pandas as pd
+import matplotlib as mpl
+#mpl.use('Agg')
+import matplotlib.pyplot as plt
+
 from aerofiles.xcsoar import Writer, TaskType, PointType, ObservationZoneType, AltitudeReference
 
 from lxml import etree
