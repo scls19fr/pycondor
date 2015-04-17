@@ -42,8 +42,36 @@ import matplotlib.pyplot as plt
 import jinja2
 
 from ctypes import WinDLL, c_char_p, c_int, c_float
-#import geopy
 
+def init_navicon_dll(condor_path, landscape):
+    dll_filename = os.path.join(condor_path, 'NaviCon.dll')
+    print("Using functions from '%s'" % dll_filename)
+    print("With landscape '%s'" % landscape)
+    print("")
+    trn_path = os.path.join(condor_path, "Landscapes", landscape, landscape + ".trn")
+
+    navicon_dll = WinDLL(dll_filename)
+
+    navicon_dll.NaviConInit.argtypes = [c_char_p]
+    navicon_dll.NaviConInit.restype = c_int
+
+    navicon_dll.GetMaxX.argtypes = []
+    navicon_dll.GetMaxX.restype = c_float
+
+    navicon_dll.GetMaxY.argtypes = []
+    navicon_dll.GetMaxY.restype = c_float
+
+    navicon_dll.XYToLon.argtypes = [c_float, c_float]
+    navicon_dll.XYToLon.restype = c_float
+
+    navicon_dll.XYToLat.argtypes = [c_float, c_float]
+    navicon_dll.XYToLat.restype = c_float
+
+    navicon_dll.NaviConInit(trn_path)
+
+    return(navicon_dll)
+
+#import geopy
 
 supported_input_extensions = ['.fpl']
 supported_versions = ['1150']
@@ -92,50 +120,27 @@ def main(debug, filename, output, outdir, condor_path, landscape):
 
     df_task = create_task_dataframe(config)
     
-    dll_filename = os.path.join(condor_path, 'NaviCon.dll')
-    print("Using functions from '%s'" % dll_filename)
-    print("With landscape '%s'" % landscape)
-    print("")
-    trn_path = os.path.join(condor_path, "Landscapes", landscape, landscape + ".trn")
+    navicon_dll = init_navicon_dll(condor_path, landscape)
 
-    mydll = WinDLL(dll_filename)
-
-    mydll.NaviConInit.argtypes = [c_char_p]
-    mydll.NaviConInit.restype = c_int
-
-    mydll.GetMaxX.argtypes = []
-    mydll.GetMaxX.restype = c_float
-
-    mydll.GetMaxY.argtypes = []
-    mydll.GetMaxY.restype = c_float
-
-    mydll.XYToLon.argtypes = [c_float, c_float]
-    mydll.XYToLon.restype = c_float
-
-    mydll.XYToLat.argtypes = [c_float, c_float]
-    mydll.XYToLat.restype = c_float
-
-    mydll.NaviConInit(trn_path)
-
-    max_x, max_y = mydll.GetMaxX(), mydll.GetMaxY()
+    max_x, max_y = navicon_dll.GetMaxX(), navicon_dll.GetMaxY()
     print("MaxX: %f" % max_x)
     print("MaxY: %f" % max_y)
 
     (x, y) = (0, 0)
-    print("XYToLat(%f,%f): %f" % (x,y, mydll.XYToLat(x,y)))
-    print("XYToLon(%f,%f): %f" % (x,y, mydll.XYToLon(x,y)))
+    print("XYToLat(%f,%f): %f" % (x,y, navicon_dll.XYToLat(x,y)))
+    print("XYToLon(%f,%f): %f" % (x,y, navicon_dll.XYToLon(x,y)))
     
     (x, y) = (max_x, 0)
-    print("XYToLat(%f,%f): %f" % (x,y, mydll.XYToLat(x,y)))
-    print("XYToLon(%f,%f): %f" % (x,y, mydll.XYToLon(x,y)))
+    print("XYToLat(%f,%f): %f" % (x,y, navicon_dll.XYToLat(x,y)))
+    print("XYToLon(%f,%f): %f" % (x,y, navicon_dll.XYToLon(x,y)))
 
     (x, y) = (max_x, max_y)
-    print("XYToLat(%f,%f): %f" % (x,y, mydll.XYToLat(x,y)))
-    print("XYToLon(%f,%f): %f" % (x,y, mydll.XYToLon(x,y)))
+    print("XYToLat(%f,%f): %f" % (x,y, navicon_dll.XYToLat(x,y)))
+    print("XYToLon(%f,%f): %f" % (x,y, navicon_dll.XYToLon(x,y)))
 
     (x, y) = (0, max_y)
-    print("XYToLat(%f,%f): %f" % (x,y, mydll.XYToLat(x,y)))
-    print("XYToLon(%f,%f): %f" % (x,y, mydll.XYToLon(x,y)))
+    print("XYToLat(%f,%f): %f" % (x,y, navicon_dll.XYToLat(x,y)))
+    print("XYToLon(%f,%f): %f" % (x,y, navicon_dll.XYToLon(x,y)))
 
     print("")
     
@@ -144,8 +149,8 @@ def main(debug, filename, output, outdir, condor_path, landscape):
     
     for i, tp in df_task.iterrows():
         pos_x, pos_y = tp['PosX'], tp['PosY']
-        df_task.loc[i,'Lat'] = mydll.XYToLat(pos_x, pos_y)
-        df_task.loc[i,'Lon'] = mydll.XYToLon(pos_x, pos_y)
+        df_task.loc[i,'Lat'] = navicon_dll.XYToLat(pos_x, pos_y)
+        df_task.loc[i,'Lon'] = navicon_dll.XYToLon(pos_x, pos_y)
         
     print(df_task)
 
