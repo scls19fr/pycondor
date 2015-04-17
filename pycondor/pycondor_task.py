@@ -159,7 +159,7 @@ condor_path_default = os.path.join(program_files, "Condor")
 @click.option('--output', default='xls', help="Output type in %s" % supported_output_formats)
 @click.option('--outdir', default='', help="Output directory - default is 'script_directory\out'")
 @click.option('--condor_path', default='', help="Condor Soaring installation path - default is %s" % condor_path_default)
-@click.option('--landscape', default='alps_XL', help="Landscape name - should be inside 'Condor\Landscapes' directory (it's also the name of a .trn file)")
+@click.option('--landscape', default='', help="Landscape name - should be inside 'Condor\Landscapes' directory (it's also the name of a .trn file)")
 def main(debug, filename, output, outdir, condor_path, landscape):
     filename_base, filename_ext = os.path.splitext(os.path.basename(filename))
     basepath = os.path.dirname(__file__)
@@ -183,6 +183,9 @@ def main(debug, filename, output, outdir, condor_path, landscape):
             % (condor_version, supported_versions)
 
     print("Condor version: %s" % condor_version)
+    
+    if landscape=='':
+        landscape = config.get('Task', 'Landscape')
 
     df_task = create_task_dataframe(config)
     
@@ -215,10 +218,22 @@ def main(debug, filename, output, outdir, condor_path, landscape):
     print("MaxX: %f" % max_x)
     print("MaxY: %f" % max_y)
 
-    print("XYToLon(0.0,0.0): %f" % mydll.XYToLon(0.0,0.0))
-    print("XYToLat(0.0,0.0): %f" % mydll.XYToLat(0.0,0.0))
-    print("XYToLon(%f,%f): %f" % (max_x, max_y, mydll.XYToLon(max_x,max_y)))
-    print("XYToLat(%f,%f): %f" % (max_x, max_y, mydll.XYToLat(max_x,max_y)))
+    (x, y) = (0, 0)
+    print("XYToLat(%f,%f): %f" % (x,y, mydll.XYToLat(x,y)))
+    print("XYToLon(%f,%f): %f" % (x,y, mydll.XYToLon(x,y)))
+    
+    (x, y) = (max_x, 0)
+    print("XYToLat(%f,%f): %f" % (x,y, mydll.XYToLat(x,y)))
+    print("XYToLon(%f,%f): %f" % (x,y, mydll.XYToLon(x,y)))
+
+    (x, y) = (max_x, max_y)
+    print("XYToLat(%f,%f): %f" % (x,y, mydll.XYToLat(x,y)))
+    print("XYToLon(%f,%f): %f" % (x,y, mydll.XYToLon(x,y)))
+
+    (x, y) = (0, max_y)
+    print("XYToLat(%f,%f): %f" % (x,y, mydll.XYToLat(x,y)))
+    print("XYToLon(%f,%f): %f" % (x,y, mydll.XYToLon(x,y)))
+
     print("")
     
     df_task["Lat"] = 0.0
