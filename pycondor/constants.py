@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
+import os
+
 supported_input_extensions = ['.fpl']
 supported_versions = ['1150']
 supported_output_formats = ['Excel', 'xls',
