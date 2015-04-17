@@ -4,6 +4,7 @@
 import click
 
 import os
+import json
 import yaml
 import pprint
 
@@ -36,6 +37,8 @@ def main(outdir, condor_path):
     print("")
     pp = pprint.PrettyPrinter(indent=4)
     pp.pprint(d)
+    print(json.dumps(d, indent=4))
+    print(yaml.dump(d))
     print("")
     
     filename_out = os.path.join(outdir, "condor.yml")
