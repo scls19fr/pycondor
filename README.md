@@ -72,6 +72,8 @@ You will probably need to install missing libraries such as:
 * click (Command Line Interface Creation kit) http://click.pocoo.org/
 * xlwt (for Excel .xls output with Python 2.x) http://www.python-excel.org/
 * xlwt-future (for Excel .xls output with Python 3.x) https://pypi.python.org/pypi/xlwt-future
+* jinja2 (template engine)  http://jinja.pocoo.org/
+* aerofiles http://aerofiles.readthedocs.org/
 
 Use
 
