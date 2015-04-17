@@ -15,12 +15,8 @@ import decimal
 
 #import jinja2
 
+from task import task_to_kml, task_to_xcsoar
 from aerofiles.xcsoar import Writer, TaskType, PointType, ObservationZoneType, AltitudeReference
-
-from lxml import etree
-from pykml.parser import Schema
-from pykml.factory import KML_ElementMaker as KML
-from pykml.factory import GX_ElementMaker as GX
 
 # see https://github.com/Turbo87/aerofiles/blob/master/aerofiles/xcsoar/constants.py
 class ObservationZone:
@@ -83,64 +79,6 @@ class SettingsTask(object):
     def __init__(self):
         pass
 
-def task_to_xcsoar(df_task, outdir, filename_base):
-    filename_out = os.path.join(outdir, filename_base + '.tsk')
-    print("Output '%s'" % filename_out)
-
-    with open(filename_out, 'w') as fp:
-        writer = Writer(fp)
-
-        with writer.write_task(type=TaskType.RACING):
-            for i, tp in df_task.iterrows():
-                with writer.write_point(type=tp.Type):
-                    writer.write_waypoint(
-                        name=tp.Name,
-                        latitude=tp.Lat,
-                        longitude=tp.Lon
-                    )
-                    
-                    # ToDo: ENHANCEMENT #writer.write_observation_zone(tp.ObservationZone)
-
-                    # ToDo: Add a aerofiles.xcsoar.ObservationZone object
-                    #https://github.com/Turbo87/aerofiles/blob/master/aerofiles/xcsoar/writer.py
-
-                    d = {}
-                    for key, val in tp.ObservationZone.__dict__.items():
-                        d[key] = val
-
-                    writer.write_observation_zone(**d)
-
-def task_to_kml(df_task, outdir, filename_base):
-    lst = df_task[['Lon', 'Lat']].values
-    s_coords = " ".join(map(lambda coord: "%s,%s" % (coord[0], coord[1]), lst))
-    doc = KML.kml(
-        KML.Placemark(
-            KML.name("gx:altitudeMode Example"),
-            KML.LookAt(
-                KML.longitude(df_task['Lon'].mean()),
-                KML.latitude(df_task['Lat'].mean()),
-                KML.heading(0),
-                KML.tilt(0),
-                KML.range(100000),
-                GX.altitudeMode("relativeToSeaFloor"),
-            ),
-            KML.LineString(
-                KML.extrude(1),
-                GX.altitudeMode("relativeToSeaFloor"),
-                KML.coordinates(s_coords)
-            )
-        )
-    )
-    print(etree.tostring(doc, pretty_print=True))
-    # output a KML file (named based on the Python script)
-    filename_out = os.path.join(outdir, filename_base + '.kml')
-    print("Output '%s'" % filename_out)
-    outfile = file(filename_out,'w')
-    outfile.write(etree.tostring(doc, pretty_print=True))
-
-    assert Schema('kml22gx.xsd').validate(doc)
-    # This validates:
-    # xmllint --noout --schema ../../pykml/schemas/kml22gx.xsd altitudemode_reference.kml
 
 
 def main():
