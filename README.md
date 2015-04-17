@@ -51,6 +51,7 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 
 ### Google Earth output (kml)
 ![google earth plot](screenshots/google_earth.jpg)
+![Display](https://raw.githubusercontent.com/scls19fr/pycondor/master/pycondor/out/default.kml)
 
 ### XCSoar (tsk)
 ![XCSoar](screenshots/xcsoar.jpg)
