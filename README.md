@@ -3,11 +3,11 @@ Python script to manage some Condor Soaring files such as task
 
 ![condor sample task](screenshots/condor.jpg)
 
+## Usage
+
 CAUTION: WORK IN PROGRESS - NOT USABLE FOR NOW
 
 See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
-
-## Usage
 
 	C:\...\pycondor>python.exe condor2task.py samples/default.fpl --debug --output xls
 	Read 'samples/default.fpl'
