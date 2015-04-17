@@ -15,7 +15,7 @@ import click
 import pandas as pd
 import decimal
 
-from task import task_to_kml, task_to_xcsoar, output_task_from_df
+from task import output_task_from_df
 from task_settings import SettingsTask, add_observation_zone
 
 @click.command()

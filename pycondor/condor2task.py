@@ -44,6 +44,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 from task import create_task_dataframe, output_task_from_df
+from task_settings import SettingsTask, add_observation_zone
 
 from ctypes import WinDLL, c_char_p, c_int, c_float
 
@@ -146,6 +147,13 @@ def main(debug, filename, output, outdir, condor_path, landscape):
         df_task.loc[i,'Lon'] = navicon_dll.XYToLon(pos_x, pos_y)
         
     print(df_task)
+
+    settings_task = SettingsTask()
+
+    df_task["Comment"] = ""
+    df_task["Wpt_id"] = df_task.index.map(lambda i: "_" + str(i))
+
+    df_task = add_observation_zone(settings_task, df_task)
 
     output_task_from_df(df_task, filename_base, output, outdir)
 
