@@ -17,48 +17,51 @@ import jinja2
 
 from enum import Enum # enum34 for Python 2.x
 
-# constants from
-#https://github.com/Turbo87/aerofiles/blob/master/aerofiles/xcsoar/constants.py
-#and from http://git.xcsoar.org/cgit/jmw/xcsoar.git/plain/src/Task/TypeStrings.cpp
+from aerofiles.xcsoar import Writer, TaskType, PointType, ObservationZoneType, AltitudeReference
 
-class MyEnum(Enum):
+# see https://github.com/Turbo87/aerofiles/blob/master/aerofiles/xcsoar/constants.py
+class ObservationZone:
+    def __init__(self, **kw):
+        assert 'type' in kw
+
+        self.type = kw['type']
+
+        if kw['type'] == ObservationZoneType.LINE:
+            assert 'length' in kw
+            self.length = kw['length']
+
+        elif kw['type'] == ObservationZoneType.CYLINDER:
+            assert 'radius' in kw
+            self.radius = kw['radius']
+
+        elif kw['type'] == ObservationZoneType.SECTOR:
+            assert 'radius' in kw
+            assert 'start_radial' in kw
+            assert 'end_radial' in kw
+            self.radius = kw['radius']
+            self.start_radial = kw['start_radial']
+            self.end_radial = kw['end_radial']
+
+        elif kw['type'] == ObservationZoneType.SYMMETRIC_QUADRANT:
+            assert 'radius' in kw
+            self.radius = kw['radius']
+
+        elif kw['type'] == ObservationZoneType.CUSTOM_KEYHOLE:
+            assert 'radius' in kw
+            assert 'inner_radius' in kw
+            assert 'angle' in kw
+            self.radius = kw['radius']
+            self.inner_radius = kw['inner_radius']
+            self.angle = kw['angle']
+
     def __str__(self):
-        return(self.name)
+        s = self.type + " "
+        for key, val in self.__dict__.items():
+            if key!="type":
+                s += "%s: %s" % (key, val)
+        return(s)
+            
 
-class TaskType(MyEnum):
-    AAT = 1
-    FAIGeneral = 2
-    FAIGoal = 3
-    FAIOR = 4
-    FAITriangle = 5
-    MAT = 6
-    Mixed = 7
-    RT = 8 # Racing
-    Touring = 9
-
-class PointType(MyEnum):
-    Start = 1
-    OptionalStart = 2
-    Area = 3
-    Turn = 4
-    Finish = 5
-
-class ObservationZoneType(MyEnum):
-    BGAStartSector = 1
-    BGAFixedCourse = 2
-    BGAEnhancedOption = 3
-    CustomKeyhole = 4
-    Cylinder = 5
-    FAISector = 6
-    Keyhole = 7
-    Line = 8 # (length)
-    MatCylinder = 9
-    Sector = 10
-    SymmetricQuadrant = 11 #(radius, angle)
-
-class AltitudeReference(MyEnum):
-    AGL = 1
-    MSL = 2
 
 class SettingsTask(object):
     AATEnabled = False
@@ -78,16 +81,6 @@ class SettingsTask(object):
 
     def __init__(self):
         pass
-
-class ObservationZone(object):
-    Radius = None # 1000
-    Type = None #ObservationZoneType.Cylinder
-    Length = None
-    Angle = None
-
-    #def __str__(self):
-    #    s="%s %d" % (self.Type, self.Radius)
-    #    return(s)
 
 def main():
     outdir = "out"
@@ -122,43 +115,46 @@ def main():
 
     #df_task["Type"] = PointType.Undef
     for i, tp in df_task.iterrows():
-        df_task.loc[i, 'ObservationZone'] = ObservationZone()
         if i==0:
-            df_task.loc[i,'Type'] = PointType.Start
-            df_task.loc[i, 'ObservationZone'].Type = ObservationZoneType.Cylinder
-            df_task.loc[i, 'ObservationZone'].Radius = 500
+            df_task.loc[i,'Type'] = PointType.START
+            df_task.loc[i, 'ObservationZone'] = ObservationZone(type=ObservationZoneType.CYLINDER, radius=500)
         elif i==df_task.index[-1]:
-            df_task.loc[i,'Type'] = PointType.Finish
-            df_task.loc[i, 'ObservationZone'].Type = ObservationZoneType.Line
-            df_task.loc[i, 'ObservationZone'].Length = 1000
+            df_task.loc[i,'Type'] = PointType.FINISH
+            df_task.loc[i, 'ObservationZone'] = ObservationZone(type=ObservationZoneType.LINE, length=500)
         elif settings_task.AATEnabled:
-            df_task.loc[i,'Type'] = PointType.Area
-            df_task.loc[i, 'ObservationZone'].Type = ObservationZoneType.Cylinder
-            df_task.loc[i, 'ObservationZone'].Radius = 1000
+            df_task.loc[i,'Type'] = PointType.AREA
+            df_task.loc[i, 'ObservationZone'] = ObservationZone(type=ObservationZoneType.CYLINDER, radius=1000)
         else:
-            df_task.loc[i,'Type'] = PointType.Turn
-            df_task.loc[i, 'ObservationZone'].Type = ObservationZoneType.Cylinder
-            df_task.loc[i, 'ObservationZone'].Radius = 1000
+            df_task.loc[i,'Type'] = PointType.TURN
+            df_task.loc[i, 'ObservationZone'] = ObservationZone(type=ObservationZoneType.CYLINDER, radius=1000)
 
     print(df_task)
     print(df_task.dtypes)
-    
-    template_dir = os.path.join(os.path.dirname(__file__), 'templates') 
-    env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
-    template = env.get_template('xcsoar6.tpl')
-    d_variables = {
-        'settings_task': settings_task,
-        'df_task': df_task,
-        'nb_wpts': len(df_task)
-    }
-    rendered = template.render(**d_variables)
-
-    print(rendered)
 
     filename_out = os.path.join(outdir, filename_base + '.tsk')
     print("Output '%s'" % filename_out)
-    with open(filename_out, "wb") as fd:
-        fd.write(rendered)
+
+    with open(filename_out, 'w') as fp:
+        writer = Writer(fp)
+
+        with writer.write_task(type=TaskType.RACING):
+            for i, tp in df_task.iterrows():
+                with writer.write_point(type=tp.Type):
+                    writer.write_waypoint(
+                        name=tp.Name,
+                        latitude=tp.Lat,
+                        longitude=tp.Lon)
+                    
+                    #writer.write_observation_zone(tp.ObservationZone) # ENHANCEMENT
+
+                    # ToDo: Add a aerofiles.xcsoar.ObservationZone object
+                    #https://github.com/Turbo87/aerofiles/blob/master/aerofiles/xcsoar/writer.py
+
+                    d = {}
+                    for key, val in tp.ObservationZone.__dict__.items():
+                        d[key] = val
+
+                    writer.write_observation_zone(**d)
 
 
 if __name__ == '__main__':
