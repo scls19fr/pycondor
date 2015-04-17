@@ -39,7 +39,7 @@ import matplotlib as mpl
 #mpl.use('Agg')
 import matplotlib.pyplot as plt
 
-import jinja2
+from task import create_task_dataframe
 
 from ctypes import WinDLL, c_char_p, c_int, c_float
 

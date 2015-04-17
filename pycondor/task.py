@@ -10,6 +10,8 @@ from pykml.parser import Schema
 from pykml.factory import KML_ElementMaker as KML
 from pykml.factory import GX_ElementMaker as GX
 
+#import jinja2
+
 def turn_point(config, id):
     TP_properties = ["Name", "PosX", "PosY", "PosZ", "Airport", "SectorType", "Radius",
     "Angle", "Altitude", "Width", "Height", "Azimuth"]
