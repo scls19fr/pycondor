@@ -39,6 +39,9 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 	5   96078.7265625   450   3000           0     0  46.250069  11.526401
 	Output 'out\default.xls'	
 
+### Spreadsheet (Excel, OpenOffice, LibreOffice) output (xls, xlsx, csv)
+![google earth plot](screenshots/spreadsheet.jpg)
+
 ### Matplotlib output (png)
 ![matplotlib plot](pycondor/out/default.png)
 
