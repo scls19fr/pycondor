@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
+from constants import supported_input_extensions, \
+    supported_versions, supported_output_formats, program_files, condor_path_default
+
 import os
 
 import decimal
