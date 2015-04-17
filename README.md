@@ -54,7 +54,9 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 [See file](https://raw.githubusercontent.com/scls19fr/pycondor/master/pycondor/out/default.kml)
 
 ### Google Maps output
-![google map](screenshots/google_maps.jpg)
+![google maps](screenshots/gmaps1.jpg)
+![google maps](screenshots/gmaps2.jpg)
+![google maps](screenshots/gmaps3.jpg)
 
 ### XCSoar (tsk)
 ![XCSoar](screenshots/xcsoar.jpg)
