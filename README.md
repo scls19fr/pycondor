@@ -41,7 +41,7 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 ![default task plot](pycondor/out/default.png)
 
 ### Google Earth output (kml)
-![default task plot](screenshots/google_earth.png)
+![default task plot](screenshots/google_earth.jpg)
 
 ## Help
 You can get command line help using:
