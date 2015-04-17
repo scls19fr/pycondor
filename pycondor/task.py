@@ -16,10 +16,6 @@ import matplotlib.pyplot as plt
 from aerofiles.xcsoar import Writer, TaskType, PointType, ObservationZoneType, AltitudeReference
 from observation_zone import ObservationZone
 
-from lxml import etree
-from pykml.parser import Schema
-from pykml.factory import KML_ElementMaker as KML
-from pykml.factory import GX_ElementMaker as GX
 
 #import jinja2
 
@@ -92,14 +88,25 @@ def task_to_xcsoar(df_task, outdir, filename_base):
                     writer.write_observation_zone(**d)
 
 def task_to_kml(df_task, outdir, filename_base):
-    lst = df_task[['Lon', 'Lat']].values
-    s_coords = " ".join(map(lambda coord: "%s,%s" % (coord[0], coord[1]), lst))
+    from lxml import etree
+    from pykml.parser import Schema
+    from pykml.factory import KML_ElementMaker as KML
+    from pykml.factory import GX_ElementMaker as GX
+
+    #lst = df_task[['Lon', 'Lat']].values
+    #s_coords = " ".join(map(lambda coord: "%s,%s" % (coord[0], coord[1]), lst))
+    
+    lst = df_task[['Lon', 'Lat', 'Altitude']].values
+    s_coords = " ".join(map(lambda coord: "%s,%s,%s" % (coord[0], coord[1], coord[2]), lst))
+    #s_coords = " ".join(map(lambda coord: "%s,%s,100.0" % (coord[0], coord[1]), lst))
+    
     #(lon, lat) = (df_task.loc[0, 'Lon'], df_task.loc[0, 'Lat'])
     (lon, lat) = ((df_task['Lon'].max()+df_task['Lon'].min()) / 2,
                 (df_task['Lat'].max()+df_task['Lat'].min()) / 2)
+    
     doc = KML.kml(
         KML.Placemark(
-            KML.name("gx:altitudeMode Example"),
+            KML.name("Condor Task %s" % filename_base),
             KML.LookAt(
                 KML.longitude(lon),
                 KML.latitude(lat),
@@ -107,12 +114,16 @@ def task_to_kml(df_task, outdir, filename_base):
                 KML.tilt(60),
                 KML.range(80000),
                 GX.altitudeMode("relativeToSeaFloor"),
+                #GX.altitudeMode("absolute"),
             ),
             KML.LineString(
                 KML.extrude(1),
                 GX.altitudeMode("relativeToSeaFloor"),
-                KML.coordinates(s_coords)
-            )
+                #GX.altitudeMode("absolute"),
+                KML.coordinates(s_coords),
+            ),
+
+
         )
     )
     print(etree.tostring(doc, pretty_print=True))
@@ -125,6 +136,33 @@ def task_to_kml(df_task, outdir, filename_base):
     assert Schema('kml22gx.xsd').validate(doc)
     # This validates:
     # xmllint --noout --schema ../../pykml/schemas/kml22gx.xsd altitudemode_reference.kml
+
+def task_to_gmaps(df_task, outdir, filename_base):
+    #import pygmaps
+    import webbrowser
+    import jinja2
+
+    center = ((df_task['Lat'].max() + df_task['Lat'].min()) / 2,
+        (df_task['Lon'].max() + df_task['Lon'].min()) / 2)
+
+
+    template_dir = os.path.join(os.path.dirname(__file__), 'templates')
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
+    template = env.get_template('gmaps.tpl')
+    d_variables = {
+        'df_task': df_task,
+        'nb_wpts': len(df_task),
+        'center': center
+    }
+    rendered = template.render(**d_variables)
+
+    print(rendered)
+
+    filename_out = os.path.join(outdir, filename_base + '.html')
+    print("Output '%s'" % filename_out)
+    with open(filename_out, "wb") as fd:
+        fd.write(rendered)
+    #webbrowser.open_new(filename_out)
 
 def output_task_from_df(df_task, filename_base, output, outdir):
     output = output.lower()
@@ -149,6 +187,8 @@ def output_task_from_df(df_task, filename_base, output, outdir):
         task_to_xcsoar(df_task, outdir, filename_base)
     elif output.lower() in ['kml', 'google earth', 'ge', 'googleearth']:
         task_to_kml(df_task, outdir, filename_base)
+    elif output.lower() in ['gmaps', 'google maps', 'gm']:
+        task_to_gmaps(df_task, outdir, filename_base)
     elif output in ['matplotlib', 'mpl', 'png', 'jpg', 'bmp']:
         fig, ax = plt.subplots(1, 1)
         #ax.scatter(df_task['PosX'],df_task['PosY'])

@@ -61,6 +61,7 @@ def main(xls_filename, output, outdir):
 
     print(df_task)
     print(df_task.dtypes)
+    print("")
 
     output_task_from_df(df_task, filename_base, output, outdir)
 

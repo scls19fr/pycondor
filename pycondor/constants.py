@@ -8,5 +8,6 @@ supported_output_formats = ['Excel', 'xls',
     'CSV', \
     'matplotlib', 'mpl', 'bmp', 'png', 'jpg',
     'tsk', 'xcsoar',
-    'kml', 'google earth', 'ge', 'googleearth'
+    'kml', 'google earth', 'ge', 'googleearth',
+    'gmaps', 'google maps', 'gm'
     ]

@@ -1,6 +1,6 @@
 <kml xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:atom="http://www.w3.org/2005/Atom" xmlns="http://www.opengis.net/kml/2.2">
   <Placemark>
-    <name>gx:altitudeMode Example</name>
+    <name>Condor Task default</name>
     <LookAt>
       <longitude>6.26005840302</longitude>
       <latitude>44.2147674561</latitude>
@@ -12,7 +12,7 @@
     <LineString>
       <extrude>1</extrude>
       <gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
-      <coordinates>5.98400020599,44.054901123 6.01072216034,44.0150871277 6.32859992981,44.0536003113 6.53611660004,44.2888832092 6.3811173439,44.4144477844 5.98400020599,44.054901123</coordinates>
+      <coordinates>5.98400020599,44.054901123,1500 6.01072216034,44.0150871277,1500 6.32859992981,44.0536003113,1600 6.53611660004,44.2888832092,2700 6.3811173439,44.4144477844,2200 5.98400020599,44.054901123,1500</coordinates>
     </LineString>
   </Placemark>
 </kml>
