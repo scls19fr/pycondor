@@ -126,22 +126,6 @@ def task_to_kml(df_task, outdir, filename_base):
     # This validates:
     # xmllint --noout --schema ../../pykml/schemas/kml22gx.xsd altitudemode_reference.kml
 
-def add_observation_zone(settings_task, df_task):
-    for i, tp in df_task.iterrows():
-        if i==0:
-            df_task.loc[i,'Type'] = PointType.START
-            df_task.loc[i, 'ObservationZone'] = ObservationZone(type=ObservationZoneType.CYLINDER, radius=500)
-        elif i==df_task.index[-1]:
-            df_task.loc[i,'Type'] = PointType.FINISH
-            df_task.loc[i, 'ObservationZone'] = ObservationZone(type=ObservationZoneType.LINE, length=500)
-        elif settings_task.AATEnabled:
-            df_task.loc[i,'Type'] = PointType.AREA
-            df_task.loc[i, 'ObservationZone'] = ObservationZone(type=ObservationZoneType.CYLINDER, radius=1000)
-        else:
-            df_task.loc[i,'Type'] = PointType.TURN
-            df_task.loc[i, 'ObservationZone'] = ObservationZone(type=ObservationZoneType.CYLINDER, radius=1000)
-    return(df_task)
-
 def output_task_from_df(df_task, filename_base, output, outdir):
     output = output.lower()
 

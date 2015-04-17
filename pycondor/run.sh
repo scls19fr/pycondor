@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-python pycondor_task.py samples/default.fpl --debug --output xls
+python condor2task.py samples/default.fpl --debug --output xls

@@ -43,7 +43,6 @@ import matplotlib as mpl
 #mpl.use('Agg')
 import matplotlib.pyplot as plt
 
-
 from task import create_task_dataframe, output_task_from_df
 
 from ctypes import WinDLL, c_char_p, c_int, c_float
@@ -77,8 +76,6 @@ def init_navicon_dll(condor_path, landscape):
     return(navicon_dll)
 
 #import geopy
-
-
 
 @click.command()
 @click.option('--debug/--no-debug', default=False, help="debug mode")
