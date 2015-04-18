@@ -74,7 +74,9 @@ def cartesian(arrays, out=None):
 @click.option('--outdir', default='', help="Output directory - default is 'script_directory\out'")
 @click.option('--condor_path', default='', help="Condor Soaring installation path - default is %s" % condor_path_default)
 @click.option('--landscape', default='Provence-Oisans2', help="Landscape name - should be inside 'Condor\Landscapes' directory (it's also the name of a .trn file)")
-def main(outdir, condor_path, landscape):
+@click.option('--Nx', default=20, help="Number of intervals on x axis")
+@click.option('--Ny', default=20, help="Number of intervals on y axis")
+def main(outdir, condor_path, landscape, nx, ny):
     basepath = os.path.dirname(__file__)
     #basepath = os.path.dirname(os.path.abspath(__file__))
     if outdir=='':
@@ -104,11 +106,8 @@ def main(outdir, condor_path, landscape):
         d_df[s]["Lat"][i] = navicon_dll.XYToLat(x, y)
         d_df[s]["Lon"][i] = navicon_dll.XYToLon(x, y)
     
-    Nx = 20
-    Ny = 20
-    
-    a_x = np.linspace(0, max_x, Nx)
-    a_y = np.linspace(0, max_y, Ny)
+    a_x = np.linspace(0, max_x, nx)
+    a_y = np.linspace(0, max_y, ny)
     values = cartesian([a_x, a_y])
     
     s = "measures"
