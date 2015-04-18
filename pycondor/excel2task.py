@@ -2,9 +2,8 @@
 #-*- coding:utf-8 -*-
 
 """
-
-This code is just for test
-for now to try to output XCSoar6 file
+Script to output XCSoar, Google Earth, Google Maps
+from spreadsheet file (Excel xls or xlsx)
 """
 
 from constants import supported_input_extensions, \

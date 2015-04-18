@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
+"""
+Script to output corners coordinates of each installed landcape
+"""
+
 import click
 
 import os

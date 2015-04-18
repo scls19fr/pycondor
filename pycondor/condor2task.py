@@ -15,11 +15,7 @@ __status__ = "Development"
 """
 Read Condor Soaring - Flight Plan
 
-Dependencies
- - Python 2.7 or Python 3.4
- - Pandas (Numpy, ...)
- - matplotlib
- - xlwt-future (for Excel .xls output with Python 3)
+NaviCon.dll is necessary
 """
 from constants import supported_input_extensions, \
     supported_versions, supported_output_formats
