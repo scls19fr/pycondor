@@ -5,7 +5,8 @@ Python script to manage some [Condor Soaring](http://www.condorsoaring.com/) fil
 
 ## Usage
 
-This work was not carried out by Condor Team
+This work was not carried out by Condor Team.
+
 CAUTION: WORK IN PROGRESS - USE AT YOUR OWN RISK
 
 See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
