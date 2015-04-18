@@ -15,8 +15,8 @@ import pprint
 from constants_windows import program_files, \
     condor_path_default
 
-from condor_dll import init_navicon_dll
-    
+from condor_dll import init_navicon_dll, iter_landscapes
+
 @click.command()
 @click.option("--outdir", default="", help="Output directory - default is 'script_directory\out'")
 @click.option("--condor_path", default="", help="Condor Soaring installation path - default is %s" % condor_path_default)
@@ -27,15 +27,11 @@ def main(outdir, condor_path):
         outdir = os.path.join(basepath, "out")
     if condor_path=="":
         condor_path = condor_path_default
-    landscapes_path = os.path.join(condor_path, "Landscapes")
     d = {}
     d["Landscapes"] = {}
     print landscapes_path
 
-    for landscape in os.listdir(landscapes_path):
-        if not os.path.isdir(os.path.join(landscapes_path, landscape)):
-            break
-            
+    for landscape in iter_landscapes(condor_path):
         d["Landscapes"][landscape] = {}
 
         navicon_dll = init_navicon_dll(condor_path, landscape)
