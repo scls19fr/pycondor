@@ -61,7 +61,7 @@ def main(outdir, condor_path):
     print("")
     
     filename_out = os.path.join(outdir, "condor.json")
-    print("Output "%s"" % filename_out)    
+    print("Output '%s'" % filename_out)
     with open(filename_out, "w") as fd:
         fd.write(json_dat)
 
