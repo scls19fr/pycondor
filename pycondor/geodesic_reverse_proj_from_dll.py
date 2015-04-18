@@ -148,7 +148,8 @@ def main(outdir, condor_path, landscape, nx, ny):
         for i, landscape in enumerate(landscapes):
             reverse_proj_from_dll(outdir, condor_path, landscape, nx, ny)
     else:
-        for landscape in iter_landscapes(condor_path):
+        for i, landscape in iter_landscapes(condor_path):
+            print("Landscape '%s'" % landscape)
             reverse_proj_from_dll(outdir, condor_path, landscape, nx, ny)
 
 if __name__ == "__main__":
