@@ -1,10 +1,11 @@
 # pycondor
-Python script to manage some Condor Soaring files such as task
+Python script to manage some [Condor Soaring](http://www.condorsoaring.com/) files such as tasks.
 
 ![condor sample task](screenshots/condor.jpg)
 
 ## Usage
 
+This work was not carried out by Condor Team
 CAUTION: WORK IN PROGRESS - USE AT YOUR OWN RISK
 
 See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
