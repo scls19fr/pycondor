@@ -18,6 +18,8 @@ from constants import supported_input_extensions, \
 from constants_windows import program_files, \
     condor_path_default
 
+from condor_dll import init_navicon_dll
+    
 def cartesian(arrays, out=None):
     """
     Generate a cartesian product of input arrays.
@@ -73,7 +75,6 @@ def cartesian(arrays, out=None):
 @click.option('--condor_path', default='', help="Condor Soaring installation path - default is %s" % condor_path_default)
 @click.option('--landscape', default='Provence-Oisans2', help="Landscape name - should be inside 'Condor\Landscapes' directory (it's also the name of a .trn file)")
 def main(outdir, condor_path, landscape):
-    filename_base, filename_ext = os.path.splitext(os.path.basename(filename))
     basepath = os.path.dirname(__file__)
     #basepath = os.path.dirname(os.path.abspath(__file__))
     if outdir=='':
@@ -81,6 +82,9 @@ def main(outdir, condor_path, landscape):
     if condor_path=='':
         condor_path = condor_path_default
 
+    navicon_dll = init_navicon_dll(condor_path, landscape)
+    max_x, max_y = navicon_dll.GetMaxX(), navicon_dll.GetMaxY()
+        
     #filename = os.path.join(basepath, "out/condor.json")
     #with open(filename) as json_data:
     #    d = json.load(json_data)
@@ -115,9 +119,11 @@ def main(outdir, condor_path, landscape):
 
     print(df_measures)
 
-    filename_out = "out/%s.xlsx" % landcape
+    filename_out = os.path.join(outdir, "%s.xlsx" % landcape)
     print("Output '%s'" % filename_out)
     with pd.ExcelWriter(filename_out) as writer:
         df_ref.to_excel(writer, sheet_name='Ref')
         df_measures.to_excel(writer, sheet_name='Measures')
 
+if __name__ == "__main__":
+    main()

@@ -41,23 +41,21 @@ def main(outdir, condor_path):
         navicon_dll = init_navicon_dll(condor_path, landscape)
         max_x, max_y = navicon_dll.GetMaxX(), navicon_dll.GetMaxY()
         d["Landscapes"][landscape]["max"] = (max_x, max_y)
+        
+        P = {}
+        P[0] = (0, 0)
+        P[1] = (max_x, 0)
+        P[2] = (0, max_y)
+        P[3] = (max_x, max_y)
 
         d["Landscapes"][landscape]["points"] = {}
         d["Landscapes"][landscape]["points"]["xy"] = {}
-        P0 = (0, 0)
-        d["Landscapes"][landscape]["points"]["xy"][0] = P0
-        P1 = (max_x, 0)
-        d["Landscapes"][landscape]["points"]["xy"][1] = P1
-        P2 = (max_x, max_y)
-        d["Landscapes"][landscape]["points"]["xy"][2] = P2
-        P3 = (0, max_y)
-        d["Landscapes"][landscape]["points"]["xy"][3] = P3
+        for i, xy in P.items():
+            d["Landscapes"][landscape]["points"]["xy"][i] = xy
 
         d["Landscapes"][landscape]["points"]["LatLon"] = {}
-        d["Landscapes"][landscape]["points"]["LatLon"][0] = (navicon_dll.XYToLat(*P0), navicon_dll.XYToLon(*P0))
-        d["Landscapes"][landscape]["points"]["LatLon"][1] = (navicon_dll.XYToLat(*P1), navicon_dll.XYToLon(*P1))
-        d["Landscapes"][landscape]["points"]["LatLon"][2] = (navicon_dll.XYToLat(*P2), navicon_dll.XYToLon(*P2))
-        d["Landscapes"][landscape]["points"]["LatLon"][3] = (navicon_dll.XYToLat(*P3), navicon_dll.XYToLon(*P3))
+        for i, xy in P.items():
+            d["Landscapes"][landscape]["points"]["LatLon"][i] = (navicon_dll.XYToLat(*P[i]), navicon_dll.XYToLon(*P[i]))
     
     print("")
     pp = pprint.PrettyPrinter(indent=4)
