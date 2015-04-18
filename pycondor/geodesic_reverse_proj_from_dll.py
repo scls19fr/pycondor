@@ -19,7 +19,9 @@ from constants_windows import program_files, \
     condor_path_default
 
 from condor_dll import init_navicon_dll, iter_landscapes
-    
+
+from geodesic import plot_geodesic
+  
 def cartesian(arrays, out=None):
     """
     Generate a cartesian product of input arrays.
