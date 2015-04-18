@@ -133,8 +133,10 @@ measures:
     filename_out = os.path.join(outdir, "%s.xlsx" % landscape)
     print("Output '%s'" % filename_out)
     with pd.ExcelWriter(filename_out) as writer:
-        d_df["ref"].to_excel(writer, sheet_name='Ref')
-        d_df["measures"].to_excel(writer, sheet_name='Measures')
+        key = "ref"
+        d_df[key].to_excel(writer, sheet_name=key)
+        key = "measures"
+        d_df[key].to_excel(writer, sheet_name=key)
 
 if __name__ == "__main__":
     main()
