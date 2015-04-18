@@ -10,6 +10,8 @@ def init_navicon_dll(condor_path, landscape):
     print("With landscape '%s'" % landscape)
     print("")
     trn_path = os.path.join(condor_path, "Landscapes", landscape, landscape + ".trn")
+    if not os.path.isfile(trn_path):
+        return
 
     navicon_dll = WinDLL(dll_filename)
 

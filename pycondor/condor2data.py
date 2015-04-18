@@ -29,6 +29,9 @@ def main(outdir, condor_path):
     print landscapes_path
 
     for landscape in os.listdir(landscapes_path):
+        if not os.path.isdir(os.path.join(landscapes_path, landscape)):
+            break
+            
         d["Landscapes"][landscape] = {}
 
         navicon_dll = init_navicon_dll(condor_path, landscape)
