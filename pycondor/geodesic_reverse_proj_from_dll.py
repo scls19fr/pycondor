@@ -72,7 +72,7 @@ def cartesian(arrays, out=None):
             out[j*m:(j+1)*m,1:] = out[0:m,1:]
     return out
 
-def reverse_proj_from_dll(outdir, condor_path, landscape, nx, ny):
+def reverse_proj_from_dll(outdir, condor_path, landscape, nx, ny, flag_show):
     navicon_dll = init_navicon_dll(condor_path, landscape)
     max_x, max_y = navicon_dll.GetMaxX(), navicon_dll.GetMaxY()
 
@@ -119,13 +119,15 @@ def reverse_proj_from_dll(outdir, condor_path, landscape, nx, ny):
 measures:
 %s""" % (d_df["ref"], d_df["measures"]))
     
-    filename_out = os.path.join(outdir, "%s.xlsx" % landscape)
+    filename_out = os.path.join(outdir, "geodesic_%s.xlsx" % landscape)
     print("Output '%s'" % filename_out)
     with pd.ExcelWriter(filename_out) as writer:
         key = "ref"
         d_df[key].to_excel(writer, sheet_name=key)
         key = "measures"
         d_df[key].to_excel(writer, sheet_name=key)
+        
+    plot_geodesic(outdir, landscape, d_df["measures"], flag_show)
 
 @click.command()
 @click.option('--outdir', default='', help="Output directory - default is 'script_directory\out'")
@@ -146,11 +148,16 @@ def main(outdir, condor_path, landscape, nx, ny):
 
     if landscapes!=['']:
         for i, landscape in enumerate(landscapes):
-            reverse_proj_from_dll(outdir, condor_path, landscape, nx, ny)
+            if i==1:
+                flag_show = True
+            else:
+                flag_show = False
+            reverse_proj_from_dll(outdir, condor_path, landscape, nx, ny, flag_show)
     else:
         for i, landscape in iter_landscapes(condor_path):
             print("Landscape '%s'" % landscape)
-            reverse_proj_from_dll(outdir, condor_path, landscape, nx, ny)
+            flag_show = False
+            reverse_proj_from_dll(outdir, condor_path, landscape, nx, ny, flag_show)
 
 if __name__ == "__main__":
     main()

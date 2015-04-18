@@ -53,7 +53,7 @@ def main(xls_filename, outdir):
     print(d_df)
     print(d_df['measures']['Eps'].mean())
 
-    plot_geodesic(outdir, filename_base, d_df['measures'])
+    plot_geodesic(outdir, filename_base, d_df['measures'], True)
 
 
 if __name__ == "__main__":
