@@ -84,46 +84,58 @@ def main(outdir, condor_path, landscape):
 
     navicon_dll = init_navicon_dll(condor_path, landscape)
     max_x, max_y = navicon_dll.GetMaxX(), navicon_dll.GetMaxY()
-        
-    #filename = os.path.join(basepath, "out/condor.json")
-    #with open(filename) as json_data:
-    #    d = json.load(json_data)
 
-    #print(d)
-    #print(json.dumps(d["Landscapes"][landscape], indent=4))
+    P = {}
+    P[0] = (0, 0)
+    P[1] = (max_x, 0)
+    P[2] = (0, max_y)
+    P[3] = (max_x, max_y)
+    
+    d_df = {}
 
-    #(max_x, max_y) = d["Landscapes"][landscape]["max"]
-
-    Pxy = {}
-    P_LatLon = {}
-    for i in range(4):
-        Pxy[i] = d["Landscapes"][landscape]["points"]["xy"][str(i)]
-        P_LatLon[i] = d["Landscapes"][landscape]["points"]["LatLon"][str(i)]
-
-    df_xy = pd.DataFrame(Pxy, index=["PosX", "PosY"])
-    df_LatLon = pd.DataFrame(P_LatLon, index=["Lat", "Lon"])
-    df_ref = df_xy.append(df_LatLon).transpose()
-
-    print(df_ref)
-
+    s = "ref"
+    
+    d_df[s] = pd.DataFrame(index=np.arange(4), columns=["PosX", "PosY", "Lat", "Lon"])
+    
+    for i in d_df[s].index:
+        x,y = P[i][0], P[i][1]
+        d_df[s]["PosX"][i] = x
+        d_df[s]["PosY"][i] = y
+        d_df[s]["Lat"][i] = navicon_dll.XYToLat(x, y)
+        d_df[s]["Lon"][i] = navicon_dll.XYToLon(x, y)
+    
     Nx = 20
     Ny = 20
-
+    
     a_x = np.linspace(0, max_x, Nx)
     a_y = np.linspace(0, max_y, Ny)
     values = cartesian([a_x, a_y])
+    
+    s = "measures"
+    d_df[s] = pd.DataFrame(values, columns=["PosX", "PosY"])
+    d_df[s]["Lat"] = np.nan
+    d_df[s]["Lon"] = np.nan
 
-    df_measures = pd.DataFrame(values, columns=["PosX", "PosY"])
-    df_measures["Lat"] = np.nan
-    df_measures["Lon"] = np.nan
+    for i in d_df[s].index:
+        x = d_df[s]["PosX"][i]
+        y = d_df[s]["PosY"][i]
+        d_df[s]["Lat"][i] = navicon_dll.XYToLat(x, y)
+        d_df[s]["Lon"][i] = navicon_dll.XYToLon(x, y)
 
-    print(df_measures)
+    #print(d_df["ref"])
+    #print(d_df["measures"])
 
-    filename_out = os.path.join(outdir, "%s.xlsx" % landcape)
+    print("""ref:
+%s
+
+measures:
+%s""" % (d_df["ref"], d_df["measures"]))
+    
+    filename_out = os.path.join(outdir, "%s.xlsx" % landscape)
     print("Output '%s'" % filename_out)
     with pd.ExcelWriter(filename_out) as writer:
-        df_ref.to_excel(writer, sheet_name='Ref')
-        df_measures.to_excel(writer, sheet_name='Measures')
+        d_df["ref"].to_excel(writer, sheet_name='Ref')
+        d_df["measures"].to_excel(writer, sheet_name='Measures')
 
 if __name__ == "__main__":
     main()
