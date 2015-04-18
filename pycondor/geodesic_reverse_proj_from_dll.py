@@ -18,7 +18,7 @@ from constants import supported_input_extensions, \
 from constants_windows import program_files, \
     condor_path_default
 
-from condor_dll import init_navicon_dll
+from condor_dll import init_navicon_dll, iter_landscapes
     
 def cartesian(arrays, out=None):
     """
@@ -70,20 +70,7 @@ def cartesian(arrays, out=None):
             out[j*m:(j+1)*m,1:] = out[0:m,1:]
     return out
 
-@click.command()
-@click.option('--outdir', default='', help="Output directory - default is 'script_directory\out'")
-@click.option('--condor_path', default='', help="Condor Soaring installation path - default is %s" % condor_path_default)
-@click.option('--landscape', default='Provence-Oisans2', help="Landscape name - should be inside 'Condor\Landscapes' directory (it's also the name of a .trn file)")
-@click.option('--Nx', default=20, help="Number of intervals on x axis")
-@click.option('--Ny', default=20, help="Number of intervals on y axis")
-def main(outdir, condor_path, landscape, nx, ny):
-    basepath = os.path.dirname(__file__)
-    #basepath = os.path.dirname(os.path.abspath(__file__))
-    if outdir=='':
-        outdir = os.path.join(basepath, 'out')
-    if condor_path=='':
-        condor_path = condor_path_default
-
+def reverse_proj_from_dll(outdir, condor_path, landscape, nx, ny):
     navicon_dll = init_navicon_dll(condor_path, landscape)
     max_x, max_y = navicon_dll.GetMaxX(), navicon_dll.GetMaxY()
 
@@ -137,6 +124,30 @@ measures:
         d_df[key].to_excel(writer, sheet_name=key)
         key = "measures"
         d_df[key].to_excel(writer, sheet_name=key)
+
+@click.command()
+@click.option('--outdir', default='', help="Output directory - default is 'script_directory\out'")
+@click.option('--condor_path', default='', help="Condor Soaring installation path - default is %s" % condor_path_default)
+@click.option('--landscape', default='', help="Landscape name - should be inside 'Condor\Landscapes' directory (it's also the name of a .trn file)")
+@click.option('--Nx', default=20, help="Number of intervals on x axis")
+@click.option('--Ny', default=20, help="Number of intervals on y axis")
+def main(outdir, condor_path, landscape, nx, ny):
+    basepath = os.path.dirname(__file__)
+    #basepath = os.path.dirname(os.path.abspath(__file__))
+    if outdir=='':
+        outdir = os.path.join(basepath, 'out')
+    if condor_path=='':
+        condor_path = condor_path_default
+
+    landscapes = landscape
+    landscapes = landscapes.split(',')
+
+    if landscapes!=['']:
+        for i, landscape in enumerate(landscapes):
+            reverse_proj_from_dll(outdir, condor_path, landscape, nx, ny)
+    else:
+        for landscape in iter_landscapes(condor_path):
+            reverse_proj_from_dll(outdir, condor_path, landscape, nx, ny)
 
 if __name__ == "__main__":
     main()

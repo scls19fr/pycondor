@@ -31,7 +31,7 @@ def main(outdir, condor_path):
     d["Landscapes"] = {}
     print landscapes_path
 
-    for landscape in iter_landscapes(condor_path):
+    for i, landscape in iter_landscapes(condor_path):
         d["Landscapes"][landscape] = {}
 
         navicon_dll = init_navicon_dll(condor_path, landscape)
@@ -46,12 +46,12 @@ def main(outdir, condor_path):
 
         d["Landscapes"][landscape]["points"] = {}
         d["Landscapes"][landscape]["points"]["xy"] = {}
-        for i, xy in P.items():
-            d["Landscapes"][landscape]["points"]["xy"][i] = xy
+        for j, xy in P.items():
+            d["Landscapes"][landscape]["points"]["xy"][j] = xy
 
         d["Landscapes"][landscape]["points"]["LatLon"] = {}
-        for i, xy in P.items():
-            d["Landscapes"][landscape]["points"]["LatLon"][i] = (navicon_dll.XYToLat(*P[i]), navicon_dll.XYToLon(*P[i]))
+        for j, xy in P.items():
+            d["Landscapes"][landscape]["points"]["LatLon"][j] = (navicon_dll.XYToLat(*P[i]), navicon_dll.XYToLon(*P[j]))
     
     print("")
     pp = pprint.PrettyPrinter(indent=4)
