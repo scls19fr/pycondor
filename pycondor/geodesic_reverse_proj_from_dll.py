@@ -154,7 +154,7 @@ def main(outdir, condor_path, landscape, nx, ny):
                 flag_show = False
             reverse_proj_from_dll(outdir, condor_path, landscape, nx, ny, flag_show)
     else:
-        for i, landscape in iter_landscapes(condor_path):
+        for landscape in iter_landscapes(condor_path):
             print("Landscape '%s'" % landscape)
             flag_show = False
             reverse_proj_from_dll(outdir, condor_path, landscape, nx, ny, flag_show)

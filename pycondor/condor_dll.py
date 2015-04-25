@@ -36,7 +36,7 @@ def init_navicon_dll(condor_path, landscape):
 
 def iter_landscapes(condor_path):
     landscapes_path = os.path.join(condor_path, "Landscapes")
-    for i, landscape in enumerate(os.listdir(landscapes_path)):
+    for landscape in os.listdir(landscapes_path):
         if not os.path.isdir(os.path.join(landscapes_path, landscape)):
             break
-        yield(i, landscape)
+        yield(landscape)

@@ -20,13 +20,9 @@ NaviCon.dll is necessary
 from constants import supported_input_extensions, \
     supported_versions, supported_output_formats
 
-from constants_windows import program_files, \
-    condor_path_default
-
 import click
 
 import os
-import sys
 
 try:
     import configparser
@@ -54,11 +50,11 @@ from condor_dll import init_navicon_dll
 @click.option('--condor_path', default='', help="Condor Soaring installation path - default is %s" % condor_path_default)
 @click.option('--landscape', default='', help="Landscape name - should be inside 'Condor\Landscapes' directory (it's also the name of a .trn file)")
 def main(debug, filename, output, outdir, condor_path, landscape):
+    filename_base, filename_ext = os.path.splitext(os.path.basename(filename))
     if debug:        
         assert filename_ext in supported_input_extensions, \
         "File extension of '%s' is '%s' but supported extension must be in %s" \
         % (filename, filename_ext, supported_input_extensions)
-    filename_base, filename_ext = os.path.splitext(os.path.basename(filename))
     basepath = os.path.dirname(__file__)
     #basepath = os.path.dirname(os.path.abspath(__file__))
     if outdir=='':

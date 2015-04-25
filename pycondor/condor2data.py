@@ -12,9 +12,6 @@ import json
 #import yaml
 import pprint
 
-from constants_windows import program_files, \
-    condor_path_default
-
 from condor_dll import init_navicon_dll, iter_landscapes
 
 @click.command()
@@ -30,7 +27,7 @@ def main(outdir, condor_path):
     d = {}
     d["Landscapes"] = {}
 
-    for i, landscape in iter_landscapes(condor_path):
+    for landscape in iter_landscapes(condor_path):
         d["Landscapes"][landscape] = {}
 
         navicon_dll = init_navicon_dll(condor_path, landscape)
