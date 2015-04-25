@@ -20,6 +20,8 @@ NaviCon.dll is necessary
 from constants import supported_input_extensions, \
     supported_versions, supported_output_formats
 
+from constants_windows import condor_path_default
+
 import click
 
 import os

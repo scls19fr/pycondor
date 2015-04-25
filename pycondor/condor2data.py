@@ -14,6 +14,8 @@ import pprint
 
 from condor_dll import init_navicon_dll, iter_landscapes
 
+from constants_windows import condor_path_default
+
 @click.command()
 @click.option("--outdir", default="", help="Output directory - default is 'script_directory\out'")
 @click.option("--condor_path", default="", help="Condor Soaring installation path - default is %s" % condor_path_default)
