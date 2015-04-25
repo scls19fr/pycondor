@@ -204,7 +204,7 @@ def output_task_from_df(df_task, filename_base, output, outdir):
         delta_Lon = df_task['Lon'].max() - df_task['Lon'].min()
         delta_Lat = df_task['Lat'].max() - df_task['Lat'].min()
         for i, tp in df_task.iterrows():
-             ax.annotate(i, xy=(tp['Lon']+delta_Lon/40, tp['Lat']+delta_Lat/40))
+            ax.annotate(i, xy=(tp['Lon'] + delta_Lon/40, tp['Lat'] + delta_Lat/40))
         ax.set_xlabel('Lon')
         ax.set_ylabel('Lat')
         if output in ['matplotlib', 'mpl']:
