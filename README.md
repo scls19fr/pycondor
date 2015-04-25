@@ -1,3 +1,5 @@
+[![Code Health](https://landscape.io/github/scls19fr/pycondor/master/landscape.svg?style=flat)](https://landscape.io/github/scls19fr/pycondor/master)
+
 # pycondor
 Python script to manage some [Condor Soaring](http://www.condorsoaring.com/) files such as tasks.
 
