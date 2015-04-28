@@ -8,7 +8,7 @@ Script to output some (X, Y) -> (Lat, Lon) points
 import click
 
 import os
-import json
+#import json
 import pandas as pd
 import numpy as np
 
