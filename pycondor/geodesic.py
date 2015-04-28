@@ -15,6 +15,9 @@ def plot_geodesic(outdir, landscape, df, flag_show):
             axarr[i,j].set_xlabel(val_j)
             axarr[i,j].set_ylabel(val_i)
 
+    # see also Seaborn pairplot
+    # http://stanford.edu/~mwaskom/software/seaborn/generated/seaborn.pairplot.html
+
     filename_out = os.path.join(outdir, "geodesic_%s.png" % (landscape))
     print("Output '%s'" % filename_out)
     plt.savefig(filename_out)

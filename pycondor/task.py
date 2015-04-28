@@ -8,10 +8,13 @@ import os
 
 import decimal
 
+import numpy as np
 import pandas as pd
 import matplotlib as mpl
 #mpl.use('Agg')
 import matplotlib.pyplot as plt
+
+from tools import haversine_bearing, haversine_distance
 
 from aerofiles.xcsoar import Writer, TaskType, PointType, ObservationZoneType, AltitudeReference
 from observation_zone import ObservationZone
@@ -216,3 +219,19 @@ def output_task_from_df(df_task, filename_base, output, outdir):
             plt.savefig(filename_out)
     else:
         raise(NotImplementedError)
+
+def add_distance_bearing(df_task):
+    """
+    Add columns for bearing and distance (and cumsum)
+    """
+    df_task['Bearing'] = np.nan
+    df_task['DistanceToGo'] = np.nan
+    for idx in df_task.index[:-1]:
+        (lat1, lon1) = (df_task.loc[idx, 'Lat'], df_task.loc[idx, 'Lon'])
+        (lat2, lon2) = (df_task.loc[idx + 1, 'Lat'], df_task.loc[idx + 1, 'Lon'])
+        df_task.loc[idx, 'Bearing'] = haversine_bearing(lat1, lon1, lat2, lon2)
+        df_task.loc[idx, 'DistanceToGo'] = haversine_distance(lat1, lon1, lat2, lon2)
+    df_task['DistanceToGoSum'] = df_task['DistanceToGo'].shift(1).fillna(0).cumsum()
+    df_task['DistanceToGoSumRev'] = df_task['DistanceToGo'].sum() - df_task['DistanceToGoSum']
+    return(df_task)
+

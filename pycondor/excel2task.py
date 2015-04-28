@@ -14,7 +14,7 @@ import click
 import pandas as pd
 import decimal
 
-from task import output_task_from_df
+from task import output_task_from_df, add_distance_bearing
 from task_settings import SettingsTask, add_observation_zone
 
 @click.command()
@@ -56,6 +56,7 @@ def main(xls_filename, output, outdir):
     df_task["Comment"] = ""
     df_task["Wpt_id"] = df_task.index.map(lambda i: "_" + str(i))
 
+    df_task = add_distance_bearing(df_task)
     df_task = add_observation_zone(settings_task, df_task)
 
     print(df_task)
