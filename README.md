@@ -48,21 +48,38 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 	Output 'out\default.xls'
 
 ### Spreadsheet (Excel, OpenOffice, LibreOffice) output (xls, xlsx, csv)
+
+	C:\...\pycondor>python.exe condor2task.py samples/default.fpl --debug --output xls
+
 ![google earth plot](screenshots/spreadsheet.jpg)
 
 ### Matplotlib output (png)
+
+	C:\...\pycondor>python.exe condor2task.py samples/default.fpl --debug --output png
+
 ![matplotlib plot](pycondor/out/default.png)
 
 ### Google Earth output (kml)
+
+
+	C:\...\pycondor>python.exe condor2task.py samples/default.fpl --debug --output kml
+
 ![google earth plot](screenshots/google_earth.jpg)
+
 [See file](https://raw.githubusercontent.com/scls19fr/pycondor/master/pycondor/out/default.kml)
 
 ### Google Maps output
+
+	C:\...\pycondor>python.exe condor2task.py samples/default.fpl --debug --output gmaps
+
 ![google maps](screenshots/gmaps1.jpg)
 ![google maps](screenshots/gmaps2.jpg)
 ![google maps](screenshots/gmaps3.jpg)
 
 ### XCSoar (tsk)
+
+	C:\...\pycondor>python.exe condor2task.py samples/default.fpl --debug --output tsk
+
 ![XCSoar](screenshots/xcsoar.jpg)
 
 ## Help
