@@ -167,6 +167,12 @@ def task_to_gmaps(df_task, outdir, filename_base):
         fd.write(rendered)
     #webbrowser.open_new(filename_out)
 
+def process_df_task_objects(df_task):
+    for col in ['ObservationZone']: # only one object for now
+        if col in df_task.columns:
+            df_task[col] = df_task[col].map(str)
+    return(df_task)
+
 def output_task_from_df(df_task, filename_base, output, outdir):
     output = output.lower()
 
@@ -177,14 +183,17 @@ def output_task_from_df(df_task, filename_base, output, outdir):
     if output in ['xls', 'excel']:
         filename_out = os.path.join(outdir, filename_base + '.xls')
         print("Output '%s'" % filename_out)
+        df_task = process_df_task_objects(df_task)
         df_task.to_excel(filename_out)
     elif output in ['xlsx', 'excelx']:
         filename_out = os.path.join(outdir, filename_base + '.xlsx')
         print("Output '%s'" % filename_out)
+        df_task = process_df_task_objects(df_task)
         df_task.to_excel(filename_out)
     elif output in ['csv']:
         filename_out = os.path.join(outdir, filename_base + '.csv')
         print("Output '%s'" % filename_out)
+        df_task = process_df_task_objects(df_task)
         df_task.to_csv(filename_out)
     elif output.lower() in ['tsk', 'xcsoar']:
         task_to_xcsoar(df_task, outdir, filename_base)

@@ -112,15 +112,16 @@ def main(debug, filename, output, outdir, condor_path, landscape):
         df_task.loc[i,'Lat'] = navicon_dll.XYToLat(pos_x, pos_y)
         df_task.loc[i,'Lon'] = navicon_dll.XYToLon(pos_x, pos_y)
         
-    print(df_task)
-
     settings_task = SettingsTask()
 
-    df_task["Comment"] = ""
-    df_task["Wpt_id"] = df_task.index.map(lambda i: "_" + str(i))
+    #df_task["Comment"] = ""
+    #df_task["Wpt_id"] = df_task.index.map(lambda i: "_" + str(i))
 
     df_task = add_observation_zone(settings_task, df_task)
 
+    print(df_task)
+    print(df_task.dtypes)
+    
     output_task_from_df(df_task, filename_base, output, outdir)
 
     plt.show()
