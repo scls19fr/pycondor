@@ -80,7 +80,11 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 
 	C:\...\pycondor>python.exe condor2task.py samples/default.fpl --debug --output tsk
 
-![XCSoar](screenshots/xcsoar.jpg)
+![XCSoar](screenshots/XCSoar6/01.png)
+![XCSoar](screenshots/XCSoar6/02.png)
+![XCSoar](screenshots/XCSoar6/02.png)
+![XCSoar](screenshots/XCSoar6/04.png)
+![XCSoar](screenshots/XCSoar6/05.png)
 
 ## Help
 You can get command line help using:
