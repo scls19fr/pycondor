@@ -37,7 +37,7 @@ import matplotlib as mpl
 #mpl.use('Agg')
 import matplotlib.pyplot as plt
 
-from task import create_task_dataframe, output_task_from_df
+from task import create_task_dataframe, output_task_from_df, add_distance_bearing
 from task_settings import SettingsTask, add_observation_zone
 
 from condor_dll import NaviConDLL
@@ -124,6 +124,7 @@ def main(debug, filename, output, outdir, condor_path, landscape):
     #df_task["Comment"] = ""
     #df_task["Wpt_id"] = df_task.index.map(lambda i: "_" + str(i))
 
+    df_task = add_distance_bearing(df_task)
     df_task = add_observation_zone(settings_task, df_task)
 
     print(df_task)

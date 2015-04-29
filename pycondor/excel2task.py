@@ -6,8 +6,7 @@ Script to output XCSoar, Google Earth, Google Maps
 from spreadsheet file (Excel xls or xlsx)
 """
 
-from constants import supported_input_extensions, \
-    supported_versions, supported_output_formats
+from constants import supported_versions, supported_output_formats
 
 import os
 import click

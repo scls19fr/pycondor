@@ -13,8 +13,8 @@ CAUTION: WORK IN PROGRESS - USE AT YOUR OWN RISK
 
 See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 
-	C:\...\pycondor>python.exe condor2task.py samples/default.fpl --debug --output xls
-	Read 'samples/default.fpl'
+	C:\...\pycondor [master +26 ~2 -0 !]> python .\condor2task.py .\samples\default.fpl
+	Read '.\samples\default.fpl'
 	Condor version: 1150
 	Using functions from 'C:\Program Files (x86)\Condor\NaviCon.dll'
 	With landscape 'Provence-Oisans2'
@@ -38,14 +38,29 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 	4        0     2200   360       0   5000  DORMILLOUSE FORT  111656.5078125
 	5        1     1500   180       0   5000       Saint Auban   144740.828125
 
-				 PosY  PosZ Radius  SectorType Width        Lat       Lon
+				 PosY  PosZ Radius  SectorType Width        Lat       Lon  \
 	0   96078.7265625   450   3000           0     0  44.054901  5.984000
 	1   91578.7265625   810   3000           0     0  44.015087  6.010722
 	2    94980.953125  1543    500           0     0  44.053600  6.328600
 	3  120593.0859375  2663   1000           0     0  44.288883  6.536117
 	4   134922.265625  2159    500           0     0  44.414448  6.381117
 	5   96078.7265625   450   3000           0     0  44.054901  5.984000
-	Output 'out\default.xls'
+
+		  Bearing  DistanceToGo  DistanceToGoSum  DistanceToGoSumRev    Type  \
+	0  154.232736      4.915533         0.000000          131.250095   Start
+	1   80.323608     25.769657         4.915533          126.334562    Turn
+	2   32.245807     30.957813        30.685189          100.564906    Turn
+	3  318.619738     18.623293        61.643003           69.607092    Turn
+	4  218.495261     50.983799        80.266296           50.983799    Turn
+	5         NaN           NaN       131.250095            0.000000  Finish
+
+			 ObservationZone
+	0   Cylinder radius: 500
+	1  Cylinder radius: 1000
+	2  Cylinder radius: 1000
+	3  Cylinder radius: 1000
+	4  Cylinder radius: 1000
+	5       Line length: 500
 
 ### Spreadsheet (Excel, OpenOffice, LibreOffice) output (xls, xlsx, csv)
 
