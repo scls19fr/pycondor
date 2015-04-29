@@ -12,11 +12,9 @@ import os
 import pandas as pd
 import numpy as np
 
-from constants import supported_input_extensions, \
-    supported_versions, supported_output_formats
+from constants import supported_versions, supported_output_formats
 
-from constants_windows import program_files, \
-    condor_path_default
+from constants_windows import condor_path_default
 
 from condor_dll import init_navicon_dll, iter_landscapes
 
@@ -127,7 +125,9 @@ measures:
         key = "measures"
         d_df[key].to_excel(writer, sheet_name=key)
         
-    plot_geodesic(outdir, landscape, d_df["measures"], flag_show)
+    plot_geodesic(outdir, landscape, d_df["measures"])
+    if flag_show:
+        plt.show()
 
 @click.command()
 @click.option('--outdir', default='', help="Output directory - default is 'script_directory\out'")
