@@ -40,7 +40,7 @@ import matplotlib.pyplot as plt
 from task import create_task_dataframe, output_task_from_df
 from task_settings import SettingsTask, add_observation_zone
 
-from condor_dll import init_navicon_dll
+from condor_dll import NaviConDLL
 
 #import geopy
 
@@ -80,27 +80,33 @@ def main(debug, filename, output, outdir, condor_path, landscape):
 
     df_task = create_task_dataframe(config)
     
-    navicon_dll = init_navicon_dll(condor_path, landscape)
+    navicon_dll = NaviConDLL(condor_path)
+    navicon_dll.init(landscape)
 
-    max_x, max_y = navicon_dll.GetMaxX(), navicon_dll.GetMaxY()
+    max_x, max_y = navicon_dll.xy_max()
+    
     print("MaxX: %f" % max_x)
     print("MaxY: %f" % max_y)
 
     (x, y) = (0, 0)
-    print("XYToLat(%f,%f): %f" % (x,y, navicon_dll.XYToLat(x,y)))
-    print("XYToLon(%f,%f): %f" % (x,y, navicon_dll.XYToLon(x,y)))
+    (lat, lon) = navicon_dll.xy_to_lat_lon(x, y)
+    print("XYToLat(%f,%f): %f" % (x, y, lat))
+    print("XYToLon(%f,%f): %f" % (x, y, lon))
     
     (x, y) = (max_x, 0)
-    print("XYToLat(%f,%f): %f" % (x,y, navicon_dll.XYToLat(x,y)))
-    print("XYToLon(%f,%f): %f" % (x,y, navicon_dll.XYToLon(x,y)))
+    (lat, lon) = navicon_dll.xy_to_lat_lon(x, y)
+    print("XYToLat(%f,%f): %f" % (x, y, lat))
+    print("XYToLon(%f,%f): %f" % (x, y, lon))
 
     (x, y) = (max_x, max_y)
-    print("XYToLat(%f,%f): %f" % (x,y, navicon_dll.XYToLat(x,y)))
-    print("XYToLon(%f,%f): %f" % (x,y, navicon_dll.XYToLon(x,y)))
+    (lat, lon) = navicon_dll.xy_to_lat_lon(x, y)
+    print("XYToLat(%f,%f): %f" % (x, y, lat))
+    print("XYToLon(%f,%f): %f" % (x, y, lon))
 
     (x, y) = (0, max_y)
-    print("XYToLat(%f,%f): %f" % (x,y, navicon_dll.XYToLat(x,y)))
-    print("XYToLon(%f,%f): %f" % (x,y, navicon_dll.XYToLon(x,y)))
+    (lat, lon) = navicon_dll.xy_to_lat_lon(x, y)
+    print("XYToLat(%f,%f): %f" % (x, y, lat))
+    print("XYToLon(%f,%f): %f" % (x, y, lon))
 
     print("")
     
@@ -109,8 +115,9 @@ def main(debug, filename, output, outdir, condor_path, landscape):
     
     for i, tp in df_task.iterrows():
         pos_x, pos_y = tp['PosX'], tp['PosY']
-        df_task.loc[i,'Lat'] = navicon_dll.XYToLat(pos_x, pos_y)
-        df_task.loc[i,'Lon'] = navicon_dll.XYToLon(pos_x, pos_y)
+        (lat, lon) = navicon_dll.xy_to_lat_lon(pos_x, pos_y)
+        df_task.loc[i,'Lat'] = lat
+        df_task.loc[i,'Lon'] = lon
         
     settings_task = SettingsTask()
 

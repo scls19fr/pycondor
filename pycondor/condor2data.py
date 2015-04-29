@@ -12,7 +12,7 @@ import json
 #import yaml
 import pprint
 
-from condor_dll import init_navicon_dll, iter_landscapes
+from condor_dll import NaviConDLL, iter_landscapes
 
 from constants_windows import condor_path_default
 
@@ -32,8 +32,9 @@ def main(outdir, condor_path):
     for landscape in iter_landscapes(condor_path):
         d["Landscapes"][landscape] = {}
 
-        navicon_dll = init_navicon_dll(condor_path, landscape)
-        max_x, max_y = navicon_dll.GetMaxX(), navicon_dll.GetMaxY()
+        navicon_dll = NaviConDLL(condor_path)
+        navicon_dll.init(landscape)
+        max_x, max_y = navicon_dll.xy_max()
         d["Landscapes"][landscape]["max"] = (max_x, max_y)
         
         P = {}
@@ -49,7 +50,7 @@ def main(outdir, condor_path):
 
         d["Landscapes"][landscape]["points"]["LatLon"] = {}
         for j, xy in P.items():
-            d["Landscapes"][landscape]["points"]["LatLon"][j] = (navicon_dll.XYToLat(*P[j]), navicon_dll.XYToLon(*P[j]))
+            d["Landscapes"][landscape]["points"]["LatLon"][j] = navicon_dll.xy_to_lat_lon(*P[j])
     
     print("")
     pp = pprint.PrettyPrinter(indent=4)
