@@ -5,7 +5,7 @@ from aerofiles.xcsoar import Writer, TaskType, PointType, ObservationZoneType, A
 
 # see https://github.com/Turbo87/aerofiles/blob/master/aerofiles/xcsoar/
 
-class ObservationZone:
+class ObservationZone(object):
     def __init__(self, **kw):
         assert 'type' in kw
 
