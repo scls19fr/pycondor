@@ -11,6 +11,7 @@ import os
 #import json
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 from constants import supported_versions, supported_output_formats
 
