@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
-from constants import supported_input_extensions, \
-    supported_versions, supported_output_formats
+from constants import supported_output_formats
 
 import os
 
@@ -10,19 +9,17 @@ import decimal
 
 import numpy as np
 import pandas as pd
-import matplotlib as mpl
+#import matplotlib as mpl
 #mpl.use('Agg')
 import matplotlib.pyplot as plt
 
 from tools import haversine_bearing, haversine_distance
 
-from aerofiles.xcsoar import Writer, TaskType, PointType, ObservationZoneType, AltitudeReference
-from observation_zone import ObservationZone
-
+from aerofiles.xcsoar import Writer, TaskType, PointType, AltitudeReference
 
 #import jinja2
 
-def turn_point(config, id):
+def turn_point(config, i):
     TP_properties = ["Name", "PosX", "PosY", "PosZ", "Airport", "SectorType", "Radius",
     "Angle", "Altitude", "Width", "Height", "Azimuth"]
     d_convert = {
@@ -36,27 +33,26 @@ def turn_point(config, id):
         "Altitude": decimal.Decimal,
         "Width": decimal.Decimal,
         "Height": decimal.Decimal,
-        "Width": decimal.Decimal,
-        "Height": decimal.Decimal,
         "Azimuth": decimal.Decimal,
     }
     d_turn_point = {}
-    for property in TP_properties:
-        property_name = "TP%s%d" % (property, id)
+    for prop in TP_properties:
+        property_name = "TP%s%d" % (prop, i)
         data = config.get("Task", property_name)
-        if property in d_convert:
-            convert = d_convert[property]
+        if prop in d_convert:
+            convert = d_convert[prop]
             data = convert(data)
-        d_turn_point[property] = data
+        d_turn_point[prop] = data
     return(d_turn_point)
 
 def create_task_dataframe(config):
-    task_version = config.get('Task', 'TaskVersion')
+    #task_version = config.get('Task', 'TaskVersion')
+    
     task_count = int(config.get('Task', 'Count'))
     lst_task = []
-    for id in range(task_count):
-        task = turn_point(config, id)
-        #print("Task %d: %s" % (id, task))
+    for i in range(task_count):
+        task = turn_point(config, i)
+        #print("Task %d: %s" % (i, task))
         lst_task.append(task)
     df_task = pd.DataFrame(lst_task)
 
@@ -155,7 +151,8 @@ def task_to_gmaps(df_task, outdir, filename_base):
     d_variables = {
         'df_task': df_task,
         'nb_wpts': len(df_task),
-        'center': center
+        'center': center,
+        'title': "Condor Task %s" % filename_base,
     }
     rendered = template.render(**d_variables)
 
@@ -165,7 +162,7 @@ def task_to_gmaps(df_task, outdir, filename_base):
     print("Output '%s'" % filename_out)
     with open(filename_out, "wb") as fd:
         fd.write(rendered)
-    #webbrowser.open_new(filename_out)
+    webbrowser.open_new(filename_out)
 
 def process_df_task_objects(df_task):
     for col in ['ObservationZone']: # only one object for now

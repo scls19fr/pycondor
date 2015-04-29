@@ -6,7 +6,7 @@ Script to output XCSoar, Google Earth, Google Maps
 from spreadsheet file (Excel xls or xlsx)
 """
 
-from constants import supported_versions, supported_output_formats
+from constants import supported_output_formats
 
 import os
 import click
@@ -41,8 +41,6 @@ def main(xls_filename, output, outdir):
         "Radius": decimal.Decimal,
         "Angle": decimal.Decimal,
         "Altitude": decimal.Decimal,
-        "Width": decimal.Decimal,
-        "Height": decimal.Decimal,
         "Width": decimal.Decimal,
         "Height": decimal.Decimal,
         "Azimuth": decimal.Decimal,

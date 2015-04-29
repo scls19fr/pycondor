@@ -4,7 +4,7 @@
 import os
 import matplotlib.pyplot as plt
 
-def plot_geodesic(outdir, landscape, df, flag_show):
+def plot_geodesic(outdir, landscape, df):
     fig, axarr = plt.subplots(2, 2)
     plt.suptitle(landscape)
     for i, val_i in enumerate(["PosX", "PosY"]):
@@ -21,5 +21,3 @@ def plot_geodesic(outdir, landscape, df, flag_show):
     filename_out = os.path.join(outdir, "geodesic_%s.png" % (landscape))
     print("Output '%s'" % filename_out)
     plt.savefig(filename_out)
-    if flag_show:
-        plt.show()

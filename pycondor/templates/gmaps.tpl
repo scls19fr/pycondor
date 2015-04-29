@@ -3,7 +3,7 @@
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
-    <title>Simple Polylines</title>
+    <title>{{ title }}</title>
     <style>
       html, body, #map-canvas {
         height: 100%;

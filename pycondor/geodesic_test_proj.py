@@ -4,7 +4,7 @@
 import click
 
 import os
-import json
+#import json
 import pandas as pd
 import numpy as np
 import pyproj
@@ -53,8 +53,10 @@ def main(xls_filename, outdir):
     print(d_df)
     print(d_df['measures']['Eps'].mean())
 
-    plot_geodesic(outdir, filename_base, d_df['measures'], True)
-
+    plot_geodesic(outdir, filename_base, d_df['measures'])
+    plt.show()
+    #if show:
+    #    plt.show()
 
 if __name__ == "__main__":
     main()
