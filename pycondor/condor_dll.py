@@ -4,58 +4,28 @@
 import os
 from ctypes import WinDLL, c_char_p, c_int, c_float
 
-def init_navicon_dll(condor_path, landscape):
-    dll_filename = os.path.join(condor_path, 'NaviCon.dll')
-    print("Using functions from '%s'" % dll_filename)
-    print("With landscape '%s'" % landscape)
-    print("")
-    trn_path = os.path.join(condor_path, "Landscapes", landscape, landscape + ".trn")
-    if not os.path.isfile(trn_path):
-        return
-
-    navicon_dll = WinDLL(dll_filename)
-
-    navicon_dll.NaviConInit.argtypes = [c_char_p]
-    navicon_dll.NaviConInit.restype = c_int
-
-    navicon_dll.GetMaxX.argtypes = []
-    navicon_dll.GetMaxX.restype = c_float
-
-    navicon_dll.GetMaxY.argtypes = []
-    navicon_dll.GetMaxY.restype = c_float
-
-    navicon_dll.XYToLon.argtypes = [c_float, c_float]
-    navicon_dll.XYToLon.restype = c_float
-
-    navicon_dll.XYToLat.argtypes = [c_float, c_float]
-    navicon_dll.XYToLat.restype = c_float
-
-    navicon_dll.NaviConInit(trn_path)
-
-    return(navicon_dll)
-
-class NaviConDLL(object):
-    def __init__(self, condor_path):
+class NaviConDLL(WinDLL):
+    def __init__(self, condor_path):       
         self.condor_path = condor_path
         dll_filename = os.path.join(condor_path, 'NaviCon.dll')
         print("Using functions from '%s'" % dll_filename)
 
-        self._dll = WinDLL(dll_filename)
+        super(NaviConDLL, self).__init__(dll_filename)
 
-        self._dll.NaviConInit.argtypes = [c_char_p]
-        self._dll.NaviConInit.restype = c_int
+        self.NaviConInit.argtypes = [c_char_p]
+        self.NaviConInit.restype = c_int
 
-        self._dll.GetMaxX.argtypes = []
-        self._dll.GetMaxX.restype = c_float
+        self.GetMaxX.argtypes = []
+        self.GetMaxX.restype = c_float
 
-        self._dll.GetMaxY.argtypes = []
-        self._dll.GetMaxY.restype = c_float
+        self.GetMaxY.argtypes = []
+        self.GetMaxY.restype = c_float
 
-        self._dll.XYToLon.argtypes = [c_float, c_float]
-        self._dll.XYToLon.restype = c_float
+        self.XYToLon.argtypes = [c_float, c_float]
+        self.XYToLon.restype = c_float
 
-        self._dll.XYToLat.argtypes = [c_float, c_float]
-        self._dll.XYToLat.restype = c_float
+        self.XYToLat.argtypes = [c_float, c_float]
+        self.XYToLat.restype = c_float
         
     def init(self, landscape):
         print("With landscape '%s'" % landscape)
@@ -64,13 +34,13 @@ class NaviConDLL(object):
         if not os.path.isfile(trn_path):
             raise(Exception("Can't init landscape '%s' from '%s'" % (landscape, trn_path)))
 
-        return(self._dll.NaviConInit(trn_path))
+        return(self.NaviConInit(trn_path))
 
     def xy_max(self):
-        return(self._dll.GetMaxX(), self._dll.GetMaxY())
+        return(self.GetMaxX(), self.GetMaxY())
 
     def xy_to_lat_lon(self, x, y):
-        return(self._dll.XYToLat(x, y), self._dll.XYToLon(x, y))
+        return(self.XYToLat(x, y), self.XYToLon(x, y))
         
         
 def iter_landscapes(condor_path):
