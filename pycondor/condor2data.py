@@ -9,7 +9,7 @@ import click
 
 import os
 import json
-#import yaml
+import yaml
 #import pprint
 
 from condor_dll import NaviConDLL, iter_landscapes
@@ -36,7 +36,7 @@ def main(outdir, condor_path):
 
         navicon_dll.init(landscape)
         max_x, max_y = navicon_dll.xy_max()
-        d["Landscapes"][landscape]["max"] = (max_x, max_y)
+        d["Landscapes"][landscape]["max"] = list((max_x, max_y))
         
         P = {}
         P[0] = (0, 0)
@@ -47,18 +47,20 @@ def main(outdir, condor_path):
         d["Landscapes"][landscape]["points"] = {}
         d["Landscapes"][landscape]["points"]["xy"] = {}
         for j, xy in P.items():
-            d["Landscapes"][landscape]["points"]["xy"][j] = xy
+            d["Landscapes"][landscape]["points"]["xy"][j] = list(xy)
 
         d["Landscapes"][landscape]["points"]["LatLon"] = {}
         for j, xy in P.items():
-            d["Landscapes"][landscape]["points"]["LatLon"][j] = navicon_dll.xy_to_lat_lon(*P[j])
+            d["Landscapes"][landscape]["points"]["LatLon"][j] = list(navicon_dll.xy_to_lat_lon(*P[j]))
     
     print("")
     #pp = pprint.PrettyPrinter(indent=4)
     #pp.pprint(d)
     json_dat = json.dumps(d, indent=4)
     #print(json_dat)
-    #print(yaml.dump(d))
+    
+    yaml_dat = yaml.dump(d)
+    #print(yaml_dat)
     print("")
     
     filename_out = os.path.join(outdir, "condor.json")
@@ -66,6 +68,11 @@ def main(outdir, condor_path):
     with open(filename_out, "w") as fd:
         fd.write(json_dat)
 
+    filename_out = os.path.join(outdir, "condor.yaml")
+    print("Output '%s'" % filename_out)
+    with open(filename_out, "w") as fd:
+        fd.write(yaml_dat)
+        
     
 if __name__ == "__main__":
     main()
