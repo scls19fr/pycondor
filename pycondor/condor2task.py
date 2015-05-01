@@ -2,6 +2,7 @@
 #-*- coding:utf-8 -*-
 
 from __future__ import absolute_import, division, print_function
+from __future__ import unicode_literals
 
 __author__ = "Sébastien Celles"
 __copyright__ = "Copyright 2015, www.celles.net"
@@ -62,7 +63,10 @@ from condor_dll import NaviConDLL
 @click.option('--landscape', default='',
         help="Landscape name - should be inside 'Condor\Landscapes' directory (it's also the name of a .trn file)")
 @click.option('--disp/--no-disp', default=True)
-def main(debug, fpl_filename, output, outdir, condor_path, landscape, disp):
+@click.option('--fixencoding/--no-fixencoding', default=False)
+@click.option('--encoding_in', default='cp1252')
+@click.option('--encoding_errors', default='replace')
+def main(debug, fpl_filename, output, outdir, condor_path, landscape, disp, fixencoding, encoding_in, encoding_errors):
     basepath = os.path.dirname(__file__)
     #basepath = os.path.dirname(os.path.abspath(__file__))
     if outdir=='':
@@ -71,7 +75,7 @@ def main(debug, fpl_filename, output, outdir, condor_path, landscape, disp):
         condor_path = paths_default['Condor']
     fpl_filename = fpl_filename.format(**paths_default)
     outdir = outdir.format(**paths_default)
-    i_error = 0
+    lst_errors = []
     for i, filename in enumerate(glob.glob(fpl_filename)):
         try:
             logging.info("Read file %03d '%s'" % (i, filename))
@@ -149,7 +153,10 @@ def main(debug, fpl_filename, output, outdir, condor_path, landscape, disp):
 
             df_task = add_distance_bearing(df_task)
             df_task = add_observation_zone(settings_task, df_task)
-
+            
+            if fixencoding:
+                df_task['Name'] = df_task['Name'].map(lambda s: s.decode(encoding_in, errors=encoding_errors))
+            
             if disp:
                 print(df_task)
                 #print(df_task.dtypes)
@@ -160,13 +167,16 @@ def main(debug, fpl_filename, output, outdir, condor_path, landscape, disp):
 
         except:
             logging.error(traceback.format_exc())
-            i_error += 1
+            lst_errors.append(filename)
 
         print("")
         print("="*20)
         print("")
         
-    print("Convert %d files - %d errors" % (i+1, i_error))
+    N_error = len(lst_errors)
+    print("Convert %d files - %d errors" % (i+1, N_error))
+    for i, filename_error in enumerate(lst_errors):
+        print(" * %03d / %03d: %s" % (i+1, N_error, filename_error))
             
 if __name__ == '__main__':
     basepath = os.path.dirname(__file__)

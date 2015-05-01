@@ -4,6 +4,7 @@
 from constants import supported_output_formats
 
 import os
+import codecs
 
 import decimal
 
@@ -62,11 +63,10 @@ def create_task_dataframe(config):
 def task_to_xcsoar(df_task, outdir, filename_base):
     filename_out = os.path.join(outdir, filename_base + '.tsk')
     print("Output '%s'" % filename_out)
-
-    with open(filename_out, 'w') as fp:
+    with open(filename_out, 'w') as fp:  # codecs.open(..., encoding='...')
         writer = Writer(fp)
 
-        with writer.write_task(type=TaskType.RACING):
+        with writer.write_task(type=TaskType.RACING):  # encoding='...'
             for i, tp in df_task.iterrows():
                 with writer.write_point(type=tp.Type):
                     writer.write_waypoint(
