@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 from constants import supported_versions, supported_output_formats
 
-from constants_windows import condor_path_default
+from constants_windows import paths_default
 
 from condor_dll import init_navicon_dll, iter_landscapes
 
@@ -132,7 +132,7 @@ measures:
 
 @click.command()
 @click.option('--outdir', default='', help="Output directory - default is 'script_directory\out'")
-@click.option('--condor_path', default='', help="Condor Soaring installation path - default is %s" % condor_path_default)
+@click.option('--condor_path', default='', help="Condor Soaring installation path - default is %s" % paths_default['Condor'])
 @click.option('--landscape', default='', help="Landscape name - should be inside 'Condor\Landscapes' directory (it's also the name of a .trn file)")
 @click.option('--Nx', default=20, help="Number of intervals on x axis")
 @click.option('--Ny', default=20, help="Number of intervals on y axis")
@@ -142,7 +142,7 @@ def main(outdir, condor_path, landscape, nx, ny):
     if outdir=='':
         outdir = os.path.join(basepath, 'out')
     if condor_path=='':
-        condor_path = condor_path_default
+        condor_path = paths_default['Condor']
 
     landscapes = landscape
     landscapes = landscapes.split(',')

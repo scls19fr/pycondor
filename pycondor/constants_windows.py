@@ -5,10 +5,15 @@ import os
 import traceback
 
 try:
-    program_files = os.environ["ProgramFiles"] #"ProgramFiles(x86)" "ProgramW6432"
+    program_files = os.environ["ProgramFiles"]
+    # "ProgramFiles" "ProgramFiles(x86)" "ProgramW6432"
     print(program_files)
 except:
     print(traceback.format_exc())
     program_files = "C:\\Program Files"
 
-condor_path_default = os.path.join(program_files, "Condor")
+paths_default = {
+    "ProgramFiles": program_files,
+    "Condor": os.path.join(program_files, "Condor"),
+    "CondorLandscapes": os.path.join(program_files, "Condor", "Landscapes"),
+}

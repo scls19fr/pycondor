@@ -20,7 +20,7 @@ NaviCon.dll is necessary
 from constants import supported_input_extensions, \
     supported_versions, supported_output_formats
 
-from constants_windows import condor_path_default
+from constants_windows import paths_default
 
 import click
 
@@ -54,7 +54,7 @@ from condor_dll import NaviConDLL
 @click.option('--outdir', default='',
         help="Output directory - default is 'script_directory\out'")
 @click.option('--condor_path', default='',
-        help="Condor Soaring installation path - default is %s" % condor_path_default)
+        help="Condor Soaring installation path - default is %s" % paths_default['Condor'])
 @click.option('--landscape', default='',
         help="Landscape name - should be inside 'Condor\Landscapes' directory (it's also the name of a .trn file)")
 def main(debug, filename, output, outdir, condor_path, landscape):
@@ -63,7 +63,7 @@ def main(debug, filename, output, outdir, condor_path, landscape):
     if outdir=='':
         outdir = os.path.join(basepath, 'out')
     if condor_path=='':
-        condor_path = condor_path_default
+        condor_path = paths_default['Condor']
         
     for filename in glob.glob(fpl_filename):
         print("Read '%s'" % filename)
