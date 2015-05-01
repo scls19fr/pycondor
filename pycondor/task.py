@@ -86,7 +86,7 @@ def task_to_xcsoar(df_task, outdir, filename_base):
 
                     writer.write_observation_zone(**d)
 
-def task_to_kml(df_task, outdir, filename_base):
+def task_to_kml(df_task, outdir, filename_base, disp):
     from lxml import etree
     from pykml.parser import Schema
     from pykml.factory import KML_ElementMaker as KML
@@ -125,7 +125,8 @@ def task_to_kml(df_task, outdir, filename_base):
 
         )
     )
-    print(etree.tostring(doc, pretty_print=True))
+    if disp:
+        print(etree.tostring(doc, pretty_print=True))
     # output a KML file (named based on the Python script)
     filename_out = os.path.join(outdir, filename_base + '.kml')
     print("Output '%s'" % filename_out)
@@ -136,7 +137,7 @@ def task_to_kml(df_task, outdir, filename_base):
     # This validates:
     # xmllint --noout --schema ../../pykml/schemas/kml22gx.xsd altitudemode_reference.kml
 
-def task_to_gmaps(df_task, outdir, filename_base):
+def task_to_gmaps(df_task, outdir, filename_base, disp):
     #import pygmaps
     import webbrowser
     import jinja2
@@ -156,13 +157,16 @@ def task_to_gmaps(df_task, outdir, filename_base):
     }
     rendered = template.render(**d_variables)
 
-    print(rendered)
+    if disp:
+        print(rendered)
 
     filename_out = os.path.join(outdir, filename_base + '.html')
     print("Output '%s'" % filename_out)
     with open(filename_out, "wb") as fd:
         fd.write(rendered)
-    webbrowser.open_new(filename_out)
+        
+    if disp:
+        webbrowser.open_new(filename_out)
 
 def process_df_task_objects(df_task):
     for col in ['ObservationZone']: # only one object for now
@@ -170,7 +174,7 @@ def process_df_task_objects(df_task):
             df_task[col] = df_task[col].map(str)
     return(df_task)
 
-def output_task_from_df(df_task, filename_base, output, outdir):
+def output_task_from_df(df_task, filename_base, output, outdir, disp):
     output = output.lower()
 
     if output not in supported_output_formats:
@@ -195,9 +199,9 @@ def output_task_from_df(df_task, filename_base, output, outdir):
     elif output.lower() in ['tsk', 'xcsoar']:
         task_to_xcsoar(df_task, outdir, filename_base)
     elif output.lower() in ['kml', 'google earth', 'ge', 'googleearth']:
-        task_to_kml(df_task, outdir, filename_base)
+        task_to_kml(df_task, outdir, filename_base, disp)
     elif output.lower() in ['gmaps', 'google maps', 'gm']:
-        task_to_gmaps(df_task, outdir, filename_base)
+        task_to_gmaps(df_task, outdir, filename_base, disp)
     elif output in ['matplotlib', 'mpl', 'png', 'jpg', 'bmp']:
         fig, ax = plt.subplots(1, 1)
         #ax.scatter(df_task['PosX'],df_task['PosY'])

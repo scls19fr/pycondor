@@ -175,7 +175,7 @@ def main(debug, fpl_filename, output, outdir, condor_path, landscape, disp, fixe
                 print(df_task)
                 #print(df_task.dtypes)
         
-            output_task_from_df(df_task, filename_base, output, outdir)
+            output_task_from_df(df_task, filename_base, output, outdir, disp)
 
             plt.show()
 

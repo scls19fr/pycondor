@@ -16,3 +16,5 @@ REM python.exe condor2task.py "{Condor}\FlightPlans\Default\*.fpl" --output tsk 
 REM python.exe condor2task.py "{Condor}\FlightPlans\User\*.fpl" --output tsk --outdir "{XCSoarData}" --no-disp --fixencoding
 
 REM python.exe condor2task.py "{Condor}\FlightPlans\User\*.fpl" --output xls --outdir "{XCSoarData}\Excel" --no-disp
+
+REM python.exe condor2task.py "{Condor}\FlightPlans\User\*.fpl" --output ge --outdir "{XCSoarData}\GoogleEarth" --no-disp
