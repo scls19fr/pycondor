@@ -158,7 +158,7 @@ def task_to_gmaps(df_task, outdir, filename_base, disp):
         'center': center,
         'title': "Condor Task %s" % filename_base,
         'map_type': map_type,
-        'json_task': df_task.to_json(orient="columns"),
+        'json_task': task_to_json(df_task, ["Airport", "Name", "Lat", "Lon", "Altitude", "Bearing", "DistanceToGo"]),
     }
     rendered = template.render(**d_variables)
 
@@ -173,16 +173,17 @@ def task_to_gmaps(df_task, outdir, filename_base, disp):
     if disp:
         webbrowser.open_new(filename_out)
 
-def task_to_json(df_task):
+def task_to_json(df_task, cols=None):
     import json
-    #s_json = df_task.to_json() 
+    if cols is None:
+        cols = ["Name", "Lat", "Lon"]
     s_json = "{" + "\n"
-    cols = ["Name", "Lat", "Lon"]
     for i, col in enumerate(cols):
         s_json = s_json + '    "' + col + '"' + ": " + json.dumps(list(df_task[col])) + "," + "\n"
     s_json = s_json[:-2] + "\n" # Removes last comma
     s_json = s_json + "}"
     return(s_json)
+    #return(df_task.to_json(orient='columns'))
 
 def process_df_task_objects(df_task):
     for col in ['ObservationZone']: # only one object for now
