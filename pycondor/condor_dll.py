@@ -29,7 +29,6 @@ class NaviConDLL(WinDLL):
         
     def init(self, landscape):
         print("With landscape '%s'" % landscape)
-        print("")
         trn_path = os.path.join(self.condor_path, "Landscapes", landscape, landscape + ".trn")
         if not os.path.isfile(trn_path):
             raise(Exception("Can't init landscape '%s' from '%s'" % (landscape, trn_path)))
