@@ -32,6 +32,7 @@ def main(outdir, condor_path):
     navicon_dll = NaviConDLL(condor_path)
     print("")
     for landscape in iter_landscapes(condor_path):
+        print landscape
         d["Landscapes"][landscape] = {}
 
         navicon_dll.init(landscape)

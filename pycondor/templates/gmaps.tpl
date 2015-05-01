@@ -15,10 +15,12 @@
     <script>
 
 function initialize() {
+  var jsonTask = {{ json_task }};
+
   var mapOptions = {
     zoom: 10,
     center: new google.maps.LatLng({{ center[0] }}, {{ center[1] }}),
-    mapTypeId: google.maps.MapTypeId.TERRAIN
+    mapTypeId: google.maps.MapTypeId.{{ map_type }}
   };
 
   var map = new google.maps.Map(document.getElementById('map-canvas'),

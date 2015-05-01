@@ -149,11 +149,16 @@ def task_to_gmaps(df_task, outdir, filename_base, disp):
     template_dir = os.path.join(os.path.dirname(__file__), 'templates')
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
     template = env.get_template('gmaps.tpl')
+    
+    map_type = 'HYBRID'  # google.maps.MapTypeId.TERRAIN ROADMAP SATELLITE HYBRID
+   
     d_variables = {
         'df_task': df_task,
         'nb_wpts': len(df_task),
         'center': center,
         'title': "Condor Task %s" % filename_base,
+        'map_type': map_type,
+        'json_task': df_task.to_json(orient="columns"),
     }
     rendered = template.render(**d_variables)
 

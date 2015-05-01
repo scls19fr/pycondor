@@ -66,18 +66,29 @@ from condor_dll import NaviConDLL
 @click.option('--fixencoding/--no-fixencoding', default=False)
 @click.option('--encoding_in', default='cp1252')
 @click.option('--encoding_errors', default='replace')
-def main(debug, fpl_filename, output, outdir, condor_path, landscape, disp, fixencoding, encoding_in, encoding_errors):
+def main(debug, fpl_filename, output, outdir, condor_path,
+        landscape, disp, fixencoding, encoding_in, encoding_errors):
     basepath = os.path.dirname(__file__)
     #basepath = os.path.dirname(os.path.abspath(__file__))
+    
     if outdir=='':
         outdir = os.path.join(basepath, 'out')
     if condor_path=='':
         condor_path = paths_default['Condor']
-    fpl_filename = fpl_filename.format(**paths_default)
-    outdir = outdir.format(**paths_default)
+    
+    # Translate path like {Condor} using paths_default
+    d_name = paths_default.copy()
+    d_name['output'] = output
+    fpl_filename = fpl_filename.format(**d_name)
+    outdir = outdir.format(**d_name)
+    
+    if not os.path.exists(outdir):
+        print("Create directory %s" % outdir)
+        os.makedirs(outdir)
+    
     lst_errors = []
-    s_landscapes = set()
-    s_landscapes_missing = set()
+    d_landscapes = {}
+    d_landscapes_missing = {}
     filenames = glob.glob(fpl_filename)
     N_filenames = len(filenames)
     #i = -1
@@ -114,14 +125,19 @@ def main(debug, fpl_filename, output, outdir, condor_path, landscape, disp, fixe
         
             if landscape=='':  # =landscape_forced
                 fpl_landscape = config.get('Task', 'Landscape')
-                s_landscapes.add(fpl_landscape)
+                if fpl_landscape not in d_landscapes.keys():
+                    d_landscapes[fpl_landscape] = set()
+                d_landscapes[fpl_landscape].add(filename_base)
 
             df_task = create_task_dataframe(config)
         
             try:
                 navicon_dll.init(fpl_landscape)
             except:
-                s_landscapes_missing.add(fpl_landscape)
+                if fpl_landscape not in d_landscapes_missing.keys():
+                    d_landscapes_missing[fpl_landscape] = set()
+                d_landscapes_missing[fpl_landscape].add(filename_base)
+                raise(Exception("Can't init %s" % fpl_landscape))
 
             max_x, max_y = navicon_dll.xy_max()
         
@@ -174,6 +190,7 @@ def main(debug, fpl_filename, output, outdir, condor_path, landscape, disp, fixe
             if disp:
                 print(df_task)
                 #print(df_task.dtypes)
+            print("Waypoints: %d" % len(df_task))
         
             output_task_from_df(df_task, filename_base, output, outdir, disp)
 
@@ -192,10 +209,18 @@ def main(debug, fpl_filename, output, outdir, condor_path, landscape, disp, fixe
     print("Convert %d files - %d errors" % (N_filenames, N_error))
     for i, filename_error in enumerate(lst_errors):
         print(" * %03d / %03d: %s" % (i+1, N_error, filename_error))
-    print("Landscapes (from fpl): %s" % s_landscapes)
-    if len(s_landscapes_missing) > 0:
-        print("Missing landscapes (from fpl): %s" % s_landscapes_missing)
-            
+    print("Landscapes (from fpl):")
+
+    import pprint
+    
+    p = pprint.PrettyPrinter(indent=4)
+    p.pprint(d_landscapes)
+
+    print("")
+    if len(d_landscapes_missing) > 0:
+        print("Missing landscapes (from fpl):")
+        p.pprint(d_landscapes_missing)
+        
 if __name__ == '__main__':
     basepath = os.path.dirname(__file__)
     logging.config.fileConfig(os.path.join(basepath, "logging.conf"))

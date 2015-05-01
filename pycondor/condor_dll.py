@@ -46,5 +46,5 @@ def iter_landscapes(condor_path):
     landscapes_path = os.path.join(condor_path, "Landscapes")
     for landscape in os.listdir(landscapes_path):
         if not os.path.isdir(os.path.join(landscapes_path, landscape)):
-            break
+            continue
         yield(landscape)
