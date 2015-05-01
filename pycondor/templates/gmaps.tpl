@@ -44,7 +44,10 @@ function initialize() {
     var map = new google.maps.Map(document.getElementById('map-canvas'),
         mapOptions);
 
-    var turnPoint;
+   var infowindow =  new google.maps.InfoWindow({
+        content: ""
+    });
+
     for (var i = len - 1; i >= 0; i--) {
         var Lat = task["Lat"][i];
         var Lon = task["Lon"][i];
@@ -75,13 +78,7 @@ function initialize() {
             '</div>'+
             '</div>';
 
-        var infowindow = new google.maps.InfoWindow({
-            content: contentString
-        });
-
-        google.maps.event.addListener(marker, 'click', function() {
-            infowindow.open(map,marker);
-        });
+        bindInfoWindow(marker, map, infowindow, contentString);
 
 
     }
@@ -95,11 +92,14 @@ function initialize() {
     });
 
 
-
-
-
-
     flightPath.setMap(map);
+}
+
+function bindInfoWindow(marker, map, infowindow, description) {
+    google.maps.event.addListener(marker, 'click', function() {
+        infowindow.setContent(description);
+        infowindow.open(map, marker);
+    });
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);

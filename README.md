@@ -90,6 +90,7 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 ![google maps](screenshots/gmaps1.jpg)
 ![google maps](screenshots/gmaps2.jpg)
 ![google maps](screenshots/gmaps3.jpg)
+![google maps](screenshots/gmaps4.jpg)
 
 ### XCSoar (tsk)
 
