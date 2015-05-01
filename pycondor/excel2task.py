@@ -26,7 +26,8 @@ from task_settings import SettingsTask, add_observation_zone
 @click.option('--outdir', default='',
         help="Output directory - default is 'script_directory\out'")
 # --outdir {condor_path}/
-def main(xls_filename, output, outdir):
+@click.option('--disp/--no-disp', default=True)
+def main(xls_filename, output, outdir, disp):
     basepath = os.path.dirname(__file__)
     #basepath = os.path.dirname(os.path.abspath(__file__))
     if outdir=='':
@@ -65,11 +66,12 @@ def main(xls_filename, output, outdir):
         df_task = add_distance_bearing(df_task)
         df_task = add_observation_zone(settings_task, df_task)
 
-        print(df_task)
-        print(df_task.dtypes)
-        print("")
+        if disp:
+            print(df_task)
+            print(df_task.dtypes)
+            print("")
 
-        output_task_from_df(df_task, filename_base, output, outdir)
+        output_task_from_df(df_task, filename_base, output, outdir, disp)
 
 if __name__ == '__main__':
     main()

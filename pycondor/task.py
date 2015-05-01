@@ -173,6 +173,17 @@ def task_to_gmaps(df_task, outdir, filename_base, disp):
     if disp:
         webbrowser.open_new(filename_out)
 
+def task_to_json(df_task):
+    import json
+    #s_json = df_task.to_json() 
+    s_json = "{" + "\n"
+    cols = ["Name", "Lat", "Lon"]
+    for i, col in enumerate(cols):
+        s_json = s_json + '    "' + col + '"' + ": " + json.dumps(list(df_task[col])) + "," + "\n"
+    s_json = s_json[:-2] + "\n" # Removes last comma
+    s_json = s_json + "}"
+    return(s_json)
+
 def process_df_task_objects(df_task):
     for col in ['ObservationZone']: # only one object for now
         if col in df_task.columns:
@@ -232,6 +243,12 @@ def output_task_from_df(df_task, filename_base, output, outdir, disp):
             filename_out = os.path.join(outdir, filename_base + '.' + output)
             print("Output '%s'" % filename_out)
             plt.savefig(filename_out)
+    elif output in ['json']:
+        s_json = task_to_json(df_task)
+        #filename_out = os.path.join(outdir, filename_base + '.xls')
+        #print("Output '%s'" % filename_out)
+        if disp:
+            print(s_json)
     else:
         raise(NotImplementedError)
 

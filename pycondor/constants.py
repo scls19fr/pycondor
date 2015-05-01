@@ -9,7 +9,8 @@ supported_output_formats = ['excel', 'xls',
     'matplotlib', 'mpl', 'bmp', 'png', 'jpg',
     'tsk', 'xcsoar',
     'kml', 'google earth', 'ge', 'googleearth',
-    'gmaps', 'google maps', 'gm'
+    'gmaps', 'google maps', 'gm',
+    'json'
     ]
 
 # convert to lower case (if that's not the case)
