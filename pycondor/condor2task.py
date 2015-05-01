@@ -57,11 +57,6 @@ from condor_dll import NaviConDLL
 @click.option('--landscape', default='',
         help="Landscape name - should be inside 'Condor\Landscapes' directory (it's also the name of a .trn file)")
 def main(debug, filename, output, outdir, condor_path, landscape):
-    filename_base, filename_ext = os.path.splitext(os.path.basename(filename))
-    if debug:        
-        assert filename_ext in supported_input_extensions, \
-        "File extension of '%s' is '%s' but supported extension must be in %s" \
-        % (filename, filename_ext, supported_input_extensions)
     basepath = os.path.dirname(__file__)
     #basepath = os.path.dirname(os.path.abspath(__file__))
     if outdir=='':
@@ -71,6 +66,13 @@ def main(debug, filename, output, outdir, condor_path, landscape):
         
     for filename in glob.glob(fpl_filename):
         print("Read '%s'" % filename)
+
+        filename_base, filename_ext = os.path.splitext(os.path.basename(filename))
+        if debug:        
+            assert filename_ext in supported_input_extensions, \
+            "File extension of '%s' is '%s' but supported extension must be in %s" \
+            % (filename, filename_ext, supported_input_extensions)
+
         config = configparser.ConfigParser()
         config.read(filename)
         condor_version = config.get('Version', 'Condor version')
