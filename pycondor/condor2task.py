@@ -166,7 +166,7 @@ def main(debug, fpl_filename, output, outdir, condor_path, landscape, disp):
         print("="*20)
         print("")
         
-    print("Convert %d files - %d errors" % (i, i_error))
+    print("Convert %d files - %d errors" % (i+1, i_error))
             
 if __name__ == '__main__':
     basepath = os.path.dirname(__file__)
