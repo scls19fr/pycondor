@@ -48,6 +48,7 @@ from condor_dll import NaviConDLL
 @click.command()
 @click.option('--debug/--no-debug', default=False, help="debug mode")
 @click.argument('fpl_filename')
+        # Condor Task .fpl file or *.fpl
 @click.option('--output', default='xls',
         help="Output type in %s" % supported_output_formats)
 @click.option('--outdir', default='',
