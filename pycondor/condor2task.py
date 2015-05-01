@@ -25,6 +25,7 @@ from constants_windows import condor_path_default
 import click
 
 import os
+import glob
 
 try:
     import configparser
@@ -46,11 +47,15 @@ from condor_dll import NaviConDLL
 
 @click.command()
 @click.option('--debug/--no-debug', default=False, help="debug mode")
-@click.argument('filename')
-@click.option('--output', default='xls', help="Output type in %s" % supported_output_formats)
-@click.option('--outdir', default='', help="Output directory - default is 'script_directory\out'")
-@click.option('--condor_path', default='', help="Condor Soaring installation path - default is %s" % condor_path_default)
-@click.option('--landscape', default='', help="Landscape name - should be inside 'Condor\Landscapes' directory (it's also the name of a .trn file)")
+@click.argument('fpl_filename')
+@click.option('--output', default='xls',
+        help="Output type in %s" % supported_output_formats)
+@click.option('--outdir', default='',
+        help="Output directory - default is 'script_directory\out'")
+@click.option('--condor_path', default='',
+        help="Condor Soaring installation path - default is %s" % condor_path_default)
+@click.option('--landscape', default='',
+        help="Landscape name - should be inside 'Condor\Landscapes' directory (it's also the name of a .trn file)")
 def main(debug, filename, output, outdir, condor_path, landscape):
     filename_base, filename_ext = os.path.splitext(os.path.basename(filename))
     if debug:        
@@ -64,75 +69,76 @@ def main(debug, filename, output, outdir, condor_path, landscape):
     if condor_path=='':
         condor_path = condor_path_default
         
-    print("Read '%s'" % filename)
-    config = configparser.ConfigParser()
-    config.read(filename)
-    condor_version = config.get('Version', 'Condor version')
-    if debug:
-        assert condor_version in supported_versions, \
-            "[Version] Condor version '%s' is not a supported version - must be in %s" \
-            % (condor_version, supported_versions)
+    for filename in glob.glob(fpl_filename):
+        print("Read '%s'" % filename)
+        config = configparser.ConfigParser()
+        config.read(filename)
+        condor_version = config.get('Version', 'Condor version')
+        if debug:
+            assert condor_version in supported_versions, \
+                "[Version] Condor version '%s' is not a supported version - must be in %s" \
+                % (condor_version, supported_versions)
 
-    print("Condor version: %s" % condor_version)
+        print("Condor version: %s" % condor_version)
     
-    if landscape=='':
-        landscape = config.get('Task', 'Landscape')
+        if landscape=='':
+            landscape = config.get('Task', 'Landscape')
 
-    df_task = create_task_dataframe(config)
+        df_task = create_task_dataframe(config)
     
-    navicon_dll = NaviConDLL(condor_path)
-    navicon_dll.init(landscape)
+        navicon_dll = NaviConDLL(condor_path)
+        navicon_dll.init(landscape)
 
-    max_x, max_y = navicon_dll.xy_max()
+        max_x, max_y = navicon_dll.xy_max()
     
-    print("MaxX: %f" % max_x)
-    print("MaxY: %f" % max_y)
+        print("MaxX: %f" % max_x)
+        print("MaxY: %f" % max_y)
 
-    (x, y) = (0, 0)
-    (lat, lon) = navicon_dll.xy_to_lat_lon(x, y)
-    print("XYToLat(%f,%f): %f" % (x, y, lat))
-    print("XYToLon(%f,%f): %f" % (x, y, lon))
+        (x, y) = (0, 0)
+        (lat, lon) = navicon_dll.xy_to_lat_lon(x, y)
+        print("XYToLat(%f,%f): %f" % (x, y, lat))
+        print("XYToLon(%f,%f): %f" % (x, y, lon))
     
-    (x, y) = (max_x, 0)
-    (lat, lon) = navicon_dll.xy_to_lat_lon(x, y)
-    print("XYToLat(%f,%f): %f" % (x, y, lat))
-    print("XYToLon(%f,%f): %f" % (x, y, lon))
+        (x, y) = (max_x, 0)
+        (lat, lon) = navicon_dll.xy_to_lat_lon(x, y)
+        print("XYToLat(%f,%f): %f" % (x, y, lat))
+        print("XYToLon(%f,%f): %f" % (x, y, lon))
 
-    (x, y) = (max_x, max_y)
-    (lat, lon) = navicon_dll.xy_to_lat_lon(x, y)
-    print("XYToLat(%f,%f): %f" % (x, y, lat))
-    print("XYToLon(%f,%f): %f" % (x, y, lon))
+        (x, y) = (max_x, max_y)
+        (lat, lon) = navicon_dll.xy_to_lat_lon(x, y)
+        print("XYToLat(%f,%f): %f" % (x, y, lat))
+        print("XYToLon(%f,%f): %f" % (x, y, lon))
 
-    (x, y) = (0, max_y)
-    (lat, lon) = navicon_dll.xy_to_lat_lon(x, y)
-    print("XYToLat(%f,%f): %f" % (x, y, lat))
-    print("XYToLon(%f,%f): %f" % (x, y, lon))
+        (x, y) = (0, max_y)
+        (lat, lon) = navicon_dll.xy_to_lat_lon(x, y)
+        print("XYToLat(%f,%f): %f" % (x, y, lat))
+        print("XYToLon(%f,%f): %f" % (x, y, lon))
 
-    print("")
+        print("")
     
-    df_task["Lat"] = 0.0
-    df_task["Lon"] = 0.0
+        df_task["Lat"] = 0.0
+        df_task["Lon"] = 0.0
     
-    for i, tp in df_task.iterrows():
-        pos_x, pos_y = tp['PosX'], tp['PosY']
-        (lat, lon) = navicon_dll.xy_to_lat_lon(pos_x, pos_y)
-        df_task.loc[i,'Lat'] = lat
-        df_task.loc[i,'Lon'] = lon
+        for i, tp in df_task.iterrows():
+            pos_x, pos_y = tp['PosX'], tp['PosY']
+            (lat, lon) = navicon_dll.xy_to_lat_lon(pos_x, pos_y)
+            df_task.loc[i,'Lat'] = lat
+            df_task.loc[i,'Lon'] = lon
         
-    settings_task = SettingsTask()
+        settings_task = SettingsTask()
 
-    #df_task["Comment"] = ""
-    #df_task["Wpt_id"] = df_task.index.map(lambda i: "_" + str(i))
+        #df_task["Comment"] = ""
+        #df_task["Wpt_id"] = df_task.index.map(lambda i: "_" + str(i))
 
-    df_task = add_distance_bearing(df_task)
-    df_task = add_observation_zone(settings_task, df_task)
+        df_task = add_distance_bearing(df_task)
+        df_task = add_observation_zone(settings_task, df_task)
 
-    print(df_task)
-    print(df_task.dtypes)
+        print(df_task)
+        print(df_task.dtypes)
     
-    output_task_from_df(df_task, filename_base, output, outdir)
+        output_task_from_df(df_task, filename_base, output, outdir)
 
-    plt.show()
+        plt.show()
 
 if __name__ == '__main__':
     main()
