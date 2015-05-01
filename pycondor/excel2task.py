@@ -7,6 +7,7 @@ from spreadsheet file (Excel xls or xlsx)
 """
 
 from constants import supported_output_formats
+from constants_windows import paths_default
 
 import os
 import glob
