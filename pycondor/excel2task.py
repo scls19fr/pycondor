@@ -30,7 +30,8 @@ def main(xls_filename, output, outdir):
     #basepath = os.path.dirname(os.path.abspath(__file__))
     if outdir=='':
         outdir = os.path.join(basepath, 'out')
-
+    xls_filename = xls_filename.format(**paths_default)
+    outdir = outdir.format(**paths_default)
     for filename in glob.glob(xls_filename):
         print("Read '%s'" % filename)
 

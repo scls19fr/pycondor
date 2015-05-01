@@ -49,6 +49,7 @@ from condor_dll import NaviConDLL
 @click.option('--debug/--no-debug', default=False, help="debug mode")
 @click.argument('fpl_filename')
         # Condor Task .fpl file or *.fpl
+        # {Condor}/default.fpl
 @click.option('--output', default='xls',
         help="Output type in %s" % supported_output_formats)
 @click.option('--outdir', default='',
@@ -64,7 +65,8 @@ def main(debug, fpl_filename, output, outdir, condor_path, landscape):
         outdir = os.path.join(basepath, 'out')
     if condor_path=='':
         condor_path = paths_default['Condor']
-        
+    fpl_filename = fpl_filename.format(**paths_default)
+    outdir = outdir.format(**paths_default)
     for filename in glob.glob(fpl_filename):
         print("Read '%s'" % filename)
 
