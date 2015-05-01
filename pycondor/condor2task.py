@@ -76,9 +76,20 @@ def main(debug, fpl_filename, output, outdir, condor_path, landscape, disp, fixe
     fpl_filename = fpl_filename.format(**paths_default)
     outdir = outdir.format(**paths_default)
     lst_errors = []
-    for i, filename in enumerate(glob.glob(fpl_filename)):
+    s_landscapes = set()
+    s_landscapes_missing = set()
+    filenames = glob.glob(fpl_filename)
+    N_filenames = len(filenames)
+    #i = -1
+    navicon_dll = NaviConDLL(condor_path)
+
+    print("")
+    print("="*20)
+    print("")    
+    
+    for i, filename in enumerate(filenames):
         try:
-            logging.info("Read file %03d '%s'" % (i, filename))
+            logging.info("Read file %03d/%03d '%s'" % (i+1, N_filenames, filename))
 
             filename_base, filename_ext = os.path.splitext(os.path.basename(filename))
             if debug:        
@@ -101,13 +112,16 @@ def main(debug, fpl_filename, output, outdir, condor_path, landscape, disp, fixe
 
             print("Condor version: %s" % condor_version)
         
-            if landscape=='':
-                landscape = config.get('Task', 'Landscape')
+            if landscape=='':  # =landscape_forced
+                fpl_landscape = config.get('Task', 'Landscape')
+                s_landscapes.add(fpl_landscape)
 
             df_task = create_task_dataframe(config)
         
-            navicon_dll = NaviConDLL(condor_path)
-            navicon_dll.init(landscape)
+            try:
+                navicon_dll.init(fpl_landscape)
+            except:
+                s_landscapes_missing.add(fpl_landscape)
 
             max_x, max_y = navicon_dll.xy_max()
         
@@ -173,10 +187,14 @@ def main(debug, fpl_filename, output, outdir, condor_path, landscape, disp, fixe
         print("="*20)
         print("")
         
+    #N_filenames = i + 1
     N_error = len(lst_errors)
-    print("Convert %d files - %d errors" % (i+1, N_error))
+    print("Convert %d files - %d errors" % (N_filenames, N_error))
     for i, filename_error in enumerate(lst_errors):
         print(" * %03d / %03d: %s" % (i+1, N_error, filename_error))
+    print("Landscapes (from fpl): %s" % s_landscapes)
+    if len(s_landscapes_missing) > 0:
+        print("Missing landscapes (from fpl): %s" % s_landscapes_missing)
             
 if __name__ == '__main__':
     basepath = os.path.dirname(__file__)
