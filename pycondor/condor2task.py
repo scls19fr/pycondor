@@ -26,6 +26,9 @@ import click
 
 import os
 import glob
+import traceback
+import logging
+import logging.config
 
 try:
     import configparser
@@ -68,82 +71,93 @@ def main(debug, fpl_filename, output, outdir, condor_path, landscape):
     fpl_filename = fpl_filename.format(**paths_default)
     outdir = outdir.format(**paths_default)
     for filename in glob.glob(fpl_filename):
-        print("Read '%s'" % filename)
+        try:
+            logging.info("Read '%s'" % filename)
 
-        filename_base, filename_ext = os.path.splitext(os.path.basename(filename))
-        if debug:        
-            assert filename_ext in supported_input_extensions, \
-            "File extension of '%s' is '%s' but supported extension must be in %s" \
-            % (filename, filename_ext, supported_input_extensions)
+            filename_base, filename_ext = os.path.splitext(os.path.basename(filename))
+            if debug:        
+                assert filename_ext in supported_input_extensions, \
+                "File extension of '%s' is '%s' but supported extension must be in %s" \
+                % (filename, filename_ext, supported_input_extensions)
 
-        config = configparser.ConfigParser()
-        config.read(filename)
-        condor_version = config.get('Version', 'Condor version')
-        if debug:
-            assert condor_version in supported_versions, \
-                "[Version] Condor version '%s' is not a supported version - must be in %s" \
-                % (condor_version, supported_versions)
+            config = configparser.ConfigParser()
+            config.read(filename)
+            try:
+                condor_version = config.get('Version', 'Condor version')
+            except:
+                logging.error("Can't get 'Version/Condor version'")
+                condor_version = None
+            if debug:
+                assert condor_version in supported_versions, \
+                    "[Version] Condor version '%s' is not a supported version - must be in %s" \
+                    % (condor_version, supported_versions)
 
-        print("Condor version: %s" % condor_version)
-    
-        if landscape=='':
-            landscape = config.get('Task', 'Landscape')
-
-        df_task = create_task_dataframe(config)
-    
-        navicon_dll = NaviConDLL(condor_path)
-        navicon_dll.init(landscape)
-
-        max_x, max_y = navicon_dll.xy_max()
-    
-        print("MaxX: %f" % max_x)
-        print("MaxY: %f" % max_y)
-
-        (x, y) = (0, 0)
-        (lat, lon) = navicon_dll.xy_to_lat_lon(x, y)
-        print("XYToLat(%f,%f): %f" % (x, y, lat))
-        print("XYToLon(%f,%f): %f" % (x, y, lon))
-    
-        (x, y) = (max_x, 0)
-        (lat, lon) = navicon_dll.xy_to_lat_lon(x, y)
-        print("XYToLat(%f,%f): %f" % (x, y, lat))
-        print("XYToLon(%f,%f): %f" % (x, y, lon))
-
-        (x, y) = (max_x, max_y)
-        (lat, lon) = navicon_dll.xy_to_lat_lon(x, y)
-        print("XYToLat(%f,%f): %f" % (x, y, lat))
-        print("XYToLon(%f,%f): %f" % (x, y, lon))
-
-        (x, y) = (0, max_y)
-        (lat, lon) = navicon_dll.xy_to_lat_lon(x, y)
-        print("XYToLat(%f,%f): %f" % (x, y, lat))
-        print("XYToLon(%f,%f): %f" % (x, y, lon))
-
-        print("")
-    
-        df_task["Lat"] = 0.0
-        df_task["Lon"] = 0.0
-    
-        for i, tp in df_task.iterrows():
-            pos_x, pos_y = tp['PosX'], tp['PosY']
-            (lat, lon) = navicon_dll.xy_to_lat_lon(pos_x, pos_y)
-            df_task.loc[i,'Lat'] = lat
-            df_task.loc[i,'Lon'] = lon
+            print("Condor version: %s" % condor_version)
         
-        settings_task = SettingsTask()
+            if landscape=='':
+                landscape = config.get('Task', 'Landscape')
 
-        #df_task["Comment"] = ""
-        #df_task["Wpt_id"] = df_task.index.map(lambda i: "_" + str(i))
+            df_task = create_task_dataframe(config)
+        
+            navicon_dll = NaviConDLL(condor_path)
+            navicon_dll.init(landscape)
 
-        df_task = add_distance_bearing(df_task)
-        df_task = add_observation_zone(settings_task, df_task)
+            max_x, max_y = navicon_dll.xy_max()
+        
+            print("MaxX: %f" % max_x)
+            print("MaxY: %f" % max_y)
 
-        print(df_task)
-        print(df_task.dtypes)
-    
-        output_task_from_df(df_task, filename_base, output, outdir)
+            (x, y) = (0, 0)
+            (lat, lon) = navicon_dll.xy_to_lat_lon(x, y)
+            print("XYToLat(%f,%f): %f" % (x, y, lat))
+            print("XYToLon(%f,%f): %f" % (x, y, lon))
+        
+            (x, y) = (max_x, 0)
+            (lat, lon) = navicon_dll.xy_to_lat_lon(x, y)
+            print("XYToLat(%f,%f): %f" % (x, y, lat))
+            print("XYToLon(%f,%f): %f" % (x, y, lon))
 
-        plt.show()
+            (x, y) = (max_x, max_y)
+            (lat, lon) = navicon_dll.xy_to_lat_lon(x, y)
+            print("XYToLat(%f,%f): %f" % (x, y, lat))
+            print("XYToLon(%f,%f): %f" % (x, y, lon))
+
+            (x, y) = (0, max_y)
+            (lat, lon) = navicon_dll.xy_to_lat_lon(x, y)
+            print("XYToLat(%f,%f): %f" % (x, y, lat))
+            print("XYToLon(%f,%f): %f" % (x, y, lon))
+
+            print("")
+        
+            df_task["Lat"] = 0.0
+            df_task["Lon"] = 0.0
+        
+            for i, tp in df_task.iterrows():
+                pos_x, pos_y = tp['PosX'], tp['PosY']
+                (lat, lon) = navicon_dll.xy_to_lat_lon(pos_x, pos_y)
+                df_task.loc[i,'Lat'] = lat
+                df_task.loc[i,'Lon'] = lon
+            
+            settings_task = SettingsTask()
+
+            #df_task["Comment"] = ""
+            #df_task["Wpt_id"] = df_task.index.map(lambda i: "_" + str(i))
+
+            df_task = add_distance_bearing(df_task)
+            df_task = add_observation_zone(settings_task, df_task)
+
+            print(df_task)
+            #print(df_task.dtypes)
+        
+            output_task_from_df(df_task, filename_base, output, outdir)
+
+            plt.show()
+            
+        except:
+            logging.error(traceback.format_exc())
 
 if __name__ == '__main__':
+    basepath = os.path.dirname(__file__)
+    logging.config.fileConfig(os.path.join(basepath, "logging.conf"))
+    #logger = logging.getLogger("simpleExample")
     main()

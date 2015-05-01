@@ -1,37 +1,37 @@
 <Task type="RT">
 	<Point type="Start">
 		<Waypoint name="Saint Auban">
-			<Location latitude="44.054901123" longitude="5.98400020599"/>
+			<Location latitude="46.2500686646" longitude="11.5264005661"/>
 		</Waypoint>
 		<ObservationZone radius="500" type="Cylinder"/>
 	</Point>
 	<Point type="Turn">
 		<Waypoint name="Go">
-			<Location latitude="44.0150871277" longitude="6.01072216034"/>
+			<Location latitude="46.209022522" longitude="11.5501880646"/>
 		</Waypoint>
 		<ObservationZone radius="1000" type="Cylinder"/>
 	</Point>
 	<Point type="Turn">
 		<Waypoint name="Coupe S">
-			<Location latitude="44.0536003113" longitude="6.32859992981"/>
+			<Location latitude="46.2317314148" longitude="11.8835363388"/>
 		</Waypoint>
 		<ObservationZone radius="1000" type="Cylinder"/>
 	</Point>
 	<Point type="Turn">
 		<Waypoint name="3 Eveches">
-			<Location latitude="44.2888832092" longitude="6.53611660004"/>
+			<Location latitude="46.4560966492" longitude="12.1220731735"/>
 		</Waypoint>
 		<ObservationZone radius="1000" type="Cylinder"/>
 	</Point>
 	<Point type="Turn">
 		<Waypoint name="DORMILLOUSE FORT">
-			<Location latitude="44.4144477844" longitude="6.3811173439"/>
+			<Location latitude="46.5890769958" longitude="11.9740686417"/>
 		</Waypoint>
 		<ObservationZone radius="1000" type="Cylinder"/>
 	</Point>
 	<Point type="Finish">
 		<Waypoint name="Saint Auban">
-			<Location latitude="44.054901123" longitude="5.98400020599"/>
+			<Location latitude="46.2500686646" longitude="11.5264005661"/>
 		</Waypoint>
 		<ObservationZone length="500" type="Line"/>
 	</Point>
