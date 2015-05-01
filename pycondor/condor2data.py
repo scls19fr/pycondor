@@ -10,7 +10,7 @@ import click
 import os
 import json
 #import yaml
-import pprint
+#import pprint
 
 from condor_dll import NaviConDLL, iter_landscapes
 
@@ -29,10 +29,11 @@ def main(outdir, condor_path):
     d = {}
     d["Landscapes"] = {}
 
+    navicon_dll = NaviConDLL(condor_path)
+    print("")
     for landscape in iter_landscapes(condor_path):
         d["Landscapes"][landscape] = {}
 
-        navicon_dll = NaviConDLL(condor_path)
         navicon_dll.init(landscape)
         max_x, max_y = navicon_dll.xy_max()
         d["Landscapes"][landscape]["max"] = (max_x, max_y)
@@ -53,8 +54,8 @@ def main(outdir, condor_path):
             d["Landscapes"][landscape]["points"]["LatLon"][j] = navicon_dll.xy_to_lat_lon(*P[j])
     
     print("")
-    pp = pprint.PrettyPrinter(indent=4)
-    pp.pprint(d)
+    #pp = pprint.PrettyPrinter(indent=4)
+    #pp.pprint(d)
     json_dat = json.dumps(d, indent=4)
     #print(json_dat)
     #print(yaml.dump(d))
