@@ -40,7 +40,31 @@ class NaviConDLL(WinDLL):
 
     def xy_to_lat_lon(self, x, y):
         return(self.XYToLat(x, y), self.XYToLon(x, y))
+
+class ValiConDLL(WinDLL):
+    """
+    A class to validate Condor Soaring .ftr files
+    """
+    def __init__(self, condor_path):       
+        self.condor_path = condor_path
+        dll_filename = os.path.join(condor_path, 'ValiCon.dll')
+        print("Using functions from '%s'" % dll_filename)
+
+        super(ValiConDLL, self).__init__(dll_filename)
+
+        self.Validate.argtypes = [c_char_p]
+        self.Validate.restype = c_int
         
+    def validate(self, filename):
+        """
+        Returns a boolean
+        * True if filename is valid
+        * False if filename is not valid
+        
+        Use at your own risk.
+        """
+        magic = 2617600
+        return(bool(self.Validate(filename) - magic))
         
 def iter_landscapes(condor_path):
     landscapes_path = os.path.join(condor_path, "Landscapes")

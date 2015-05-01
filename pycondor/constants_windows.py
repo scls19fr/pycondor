@@ -24,6 +24,7 @@ paths_default = {
     "CondorLandscapes": os.path.join(condor_path_default, "Landscapes"),
     "CondorFlightPlansDefault": os.path.join(condor_path_default, "FlightPlans", "Default"),
     "CondorFlightPlansUser": os.path.join(condor_path_default, "FlightPlans", "User"),
+    "CondorFlightTracks": os.path.join(condor_path_default, "FlightTracks"),
     "XCSoar": os.path.join(program_files, "XCSoar"),
     "XCSoarData": os.path.join(home_path, "Documents", "XCSoarData"),
 }
