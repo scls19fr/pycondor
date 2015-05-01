@@ -57,7 +57,7 @@ from condor_dll import NaviConDLL
         help="Condor Soaring installation path - default is %s" % paths_default['Condor'])
 @click.option('--landscape', default='',
         help="Landscape name - should be inside 'Condor\Landscapes' directory (it's also the name of a .trn file)")
-def main(debug, filename, output, outdir, condor_path, landscape):
+def main(debug, fpl_filename, output, outdir, condor_path, landscape):
     basepath = os.path.dirname(__file__)
     #basepath = os.path.dirname(os.path.abspath(__file__))
     if outdir=='':
