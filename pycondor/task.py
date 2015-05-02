@@ -241,10 +241,7 @@ def task_to_json_list_of_dict(df_task):
      {'Lat': 44.054901123046875, 'Lon': 5.984000205993652, 'Name': 'Saint Auban'}]
 
     """
-    lst = []
-    for i, row in df_task.iterrows():
-        lst.append(row.to_dict())
-    return(lst)
+    return(df_task.to_dict(orient='records'))
 
 def process_df_task_objects(df_task):
     for col in ['ObservationZone']: # only one object for now
