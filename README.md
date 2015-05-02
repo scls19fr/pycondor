@@ -79,8 +79,8 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 
 	C:\...\pycondor>python.exe condor2task.py samples/default.fpl --debug --output kml
 
-![google earth plot](screenshots/google_earth/1.jpg)
-![google earth plot](screenshots/google_earth/2.jpg)
+![google earth plot](screenshots/google_earth/01.jpg)
+![google earth plot](screenshots/google_earth/02.jpg)
 
 [See file](https://raw.githubusercontent.com/scls19fr/pycondor/master/pycondor/out/default.kml)
 
@@ -88,10 +88,10 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 
 	C:\...\pycondor>python.exe condor2task.py samples/default.fpl --debug --output gmaps
 
-![google maps](screenshots/google_maps/1.jpg)
-![google maps](screenshots/google_maps/2.jpg)
-![google maps](screenshots/google_maps/3.jpg)
-![google maps](screenshots/google_maps/4.jpg)
+![google maps](screenshots/google_maps/01.jpg)
+![google maps](screenshots/google_maps/02.jpg)
+![google maps](screenshots/google_maps/03.jpg)
+![google maps](screenshots/google_maps/04.jpg)
 
 [See online](http://scls19fr.github.io/pycondor/gmaps/default.html)
 
@@ -99,11 +99,11 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 
 	C:\...\pycondor>python.exe condor2task.py samples/default.fpl --debug --output tsk
 
-![XCSoar](screenshots/XCSoar6/01.png)
-![XCSoar](screenshots/XCSoar6/02.png)
-![XCSoar](screenshots/XCSoar6/02.png)
-![XCSoar](screenshots/XCSoar6/04.png)
-![XCSoar](screenshots/XCSoar6/05.png)
+![XCSoar](screenshots/XCSoar6/01.jpg)
+![XCSoar](screenshots/XCSoar6/02.jpg)
+![XCSoar](screenshots/XCSoar6/02.jpg)
+![XCSoar](screenshots/XCSoar6/04.jpg)
+![XCSoar](screenshots/XCSoar6/05.jpg)
 
 ## Help
 You can get command line help using:
