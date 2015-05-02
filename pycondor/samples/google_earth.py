@@ -45,6 +45,14 @@ def main():
         "Altitude": [1500, 1500, 1600, 2700, 2200, 1500]
     })
 
+    #df_task = pd.DataFrame({
+    #    "Name": ["P1", "P2", "P3"],
+    #    "Lat": [49.4581, 49.4568, 49.4573],
+    #    "Lon": [-2.51227, -2.51143, -2.50931],
+    #    "Altitude": [0.0, 0.0, 0.0]
+    #})
+    # Example from: http://opencpn.shoreline.fr/8_Dossiers_techniques/DT_27_Route_Fichier_KML/DT_27_Route_et_Fichiers_KML.htm
+
     task_to_kml_with_yattag(df_task, outdir, filename_base+"_yattag", disp)
 
     task_to_kml_with_pykml(df_task, outdir, filename_base+"_pykml", disp)
@@ -55,36 +63,58 @@ def task_to_kml_with_yattag(df_task, outdir, filename_base, disp):
     s_coords = task_to_string(df_task)    
     (lat, lon) = calculate_center(df_task)
 
-    #doc.asis('<?xml version="1.0" encoding="UTF-8"?>')
+    doc.asis('<?xml version="1.0" encoding="UTF-8"?>')
     with tag('kml'):
         doc.attr(
             ("xmlns:gx", "http://www.google.com/kml/ext/2.2"),
             ("xmlns:atom", "http://www.w3.org/2005/Atom"),
             ("xmlns", "http://www.opengis.net/kml/2.2")
         )
-        with tag('Placemark'):
+        with tag('Document'):
             with tag('name'):
                 text('Condor task default')
-            with tag('LookAt'):
-                with tag('longitude'):
-                    text("%f" % lon)
-                with tag('latitude'):
-                    text("%f" % lat)
-                with tag('heading'):
-                    text("%d" % 0)
-                with tag('tilt'):
-                    text("%d" % 60)
-                with tag('range'):
-                    text("%d" % 80000)
-                with tag('gx:altitudeMode'):
-                    text('relativeToSeaFloor')
-            with tag('LineString'):
-                with tag('extrude'):
-                    text("%d" % 1)
-                with tag('gx:altitudeMode'):
-                    text('relativeToSeaFloor')
-                with tag('coordinates'):
-                    text(s_coords)
+            for i, tp in df_task.iterrows():
+                id = i + 1
+                with tag('Placemark'):
+                    with tag('name'):
+                        text("%d: %s" % (id, tp.Name))
+                    with tag('description'):
+                        text("""
+
+        <dl>
+            <dt>Lat: </dt><dd>{lat}</dd>
+            <dt>Lon: </dt><dd>{lon}</dd>
+            <dt>Alt: </dt><dd>{alt}</dd>
+        </dl>
+        <dl>            
+            <dt>Google search: </dt><dd><a href="https://www.google.fr/?#safe=off&q=' + Name + '">{name}</a></dd>
+        </dl>
+""".format(id=id, lat=tp.Lat, lon=tp.Lon, alt=tp.Altitude, name=tp.Name))
+                    with tag('Point'):
+                        with tag('coordinates'):
+                            text("%.5f,%.5f,%.1f" % (tp.Lon, tp.Lat, tp.Altitude))
+        
+            with tag('Placemark'):
+                #with tag('LookAt'):
+                #    with tag('longitude'):
+                #        text("%.5f" % lon)
+                #    with tag('latitude'):
+                #        text("%.5f" % lat)
+                #    with tag('heading'):
+                #        text("%d" % 0)
+                #    with tag('tilt'):
+                #        text("%d" % 60)
+                #    with tag('range'):
+                #        text("%d" % 80000)
+                #    with tag('gx:altitudeMode'):
+                #        text('relativeToSeaFloor')
+                with tag('LineString'):
+                #    with tag('extrude'):
+                #        text("%d" % 1)
+                #    with tag('gx:altitudeMode'):
+                #        text('relativeToSeaFloor')
+                    with tag('coordinates'):
+                        text(s_coords)
 
     result = indent(
         doc.getvalue(),
