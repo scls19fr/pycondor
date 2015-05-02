@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
+"""
+Creates KML (Google Earth file) from Pandas DataFrame
+"""
+
+
 import os
 
 import pandas as pd
@@ -87,7 +92,7 @@ def task_to_kml_with_yattag(df_task, outdir, filename_base, disp):
             <dt>Alt: </dt><dd>{alt}</dd>
         </dl>
         <dl>            
-            <dt>Google search: </dt><dd><a href="https://www.google.fr/?#safe=off&q=' + Name + '">{name}</a></dd>
+            <dt>Google search: </dt><dd><a href="https://www.google.fr/?#safe=off&q={name}">{name}</a></dd>
         </dl>
 """.format(id=id, lat=tp.Lat, lon=tp.Lon, alt=tp.Altitude, name=tp.Name))
                     with tag('Point'):

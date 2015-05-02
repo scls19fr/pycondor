@@ -87,40 +87,106 @@ def task_to_xcsoar(df_task, outdir, filename_base):
 
                     writer.write_observation_zone(**d)
 
-def task_to_kml(df_task, outdir, filename_base, disp):
+def task_to_kml_with_yattag(df_task, outdir, filename_base, disp):
+    from yattag import Doc, indent
+    from lxml import etree
+    from pykml.parser import Schema
+
+    doc, tag, text = Doc().tagtext()
+
+    s_coords = task_to_string(df_task)    
+    (lat, lon) = calculate_center(df_task)
+
+    #doc.asis('<?xml version="1.0" encoding="UTF-8"?>')
+    with tag('kml'):
+        doc.attr(
+            ("xmlns:gx", "http://www.google.com/kml/ext/2.2"),
+            ("xmlns:atom", "http://www.w3.org/2005/Atom"),
+            ("xmlns", "http://www.opengis.net/kml/2.2")
+        )
+        with tag('Document'):
+            with tag('name'):
+                text('Condor task default')
+            for i, tp in df_task.iterrows():
+                id = i + 1
+                with tag('Placemark'):
+                    with tag('name'):
+                        text("%d: %s" % (id, tp.Name))
+                    with tag('description'):
+                        text("""
+
+        <dl>
+            <dt>Lat: </dt><dd>{lat}</dd>
+            <dt>Lon: </dt><dd>{lon}</dd>
+            <dt>Alt: </dt><dd>{alt}</dd>
+        </dl>
+        <dl>            
+            <dt>Google search: </dt><dd><a href="https://www.google.fr/?#safe=off&q={name}">{name}</a></dd>
+        </dl>
+""".format(id=id, lat=tp.Lat, lon=tp.Lon, alt=tp.Altitude, name=tp.Name))
+                    with tag('Point'):
+                        with tag('coordinates'):
+                            text("%.5f,%.5f,%.1f" % (tp.Lon, tp.Lat, tp.Altitude))
+        
+            with tag('Placemark'):
+                #with tag('LookAt'):
+                #    with tag('longitude'):
+                #        text("%.5f" % lon)
+                #    with tag('latitude'):
+                #        text("%.5f" % lat)
+                #    with tag('heading'):
+                #        text("%d" % 0)
+                #    with tag('tilt'):
+                #        text("%d" % 60)
+                #    with tag('range'):
+                #        text("%d" % 80000)
+                #    with tag('gx:altitudeMode'):
+                #        text('relativeToSeaFloor')
+                with tag('LineString'):
+                #    with tag('extrude'):
+                #        text("%d" % 1)
+                #    with tag('gx:altitudeMode'):
+                #        text('relativeToSeaFloor')
+                    with tag('coordinates'):
+                        text(s_coords)
+
+    result = indent(
+        doc.getvalue(),
+        indentation = ' '*4,
+        newline = '\r\n'
+    )
+
+    if disp:
+        print(result)
+
+    filename_out = os.path.join(outdir, filename_base + '.kml')
+    print("Output '%s'" % filename_out)
+    outfile = file(filename_out,'w')
+    outfile.write(result)
+
+    doc = etree.fromstring(result)
+    assert Schema('kml22gx.xsd').validate(doc)
+
+
+def task_to_kml_with_pykml(df_task, outdir, filename_base, disp):
     from lxml import etree
     from pykml.parser import Schema
     from pykml.factory import KML_ElementMaker as KML
     from pykml.factory import GX_ElementMaker as GX
 
-    #lst = df_task[['Lon', 'Lat']].values
-    #s_coords = " ".join(map(lambda coord: "%s,%s" % (coord[0], coord[1]), lst))
+    s_coords = task_to_string(df_task)    
+    (lat, lon) = calculate_center(df_task)
     
-    lst = df_task[['Lon', 'Lat', 'Altitude']].values
-    s_coords = " ".join(map(lambda coord: "%s,%s,%s" % (coord[0], coord[1], coord[2]), lst))
-    #s_coords = " ".join(map(lambda coord: "%s,%s,100.0" % (coord[0], coord[1]), lst))
-    
-    #(lon, lat) = (df_task.loc[0, 'Lon'], df_task.loc[0, 'Lat'])
-    (lon, lat) = ((df_task['Lon'].max()+df_task['Lon'].min()) / 2,
-                (df_task['Lat'].max()+df_task['Lat'].min()) / 2)
-    
-    def turn_point_to_placemark(tp):
-        placemark = KML.Placemark(
-            KML.name(tp['Name']),
-            KML.description(tp['Name']),
-            KML.Point(
-                KML.coordinates(tp['Lon'], tp['Lat'], tp['Altitude'])
-            ),
-        )
-        return(placemark)
-
-    placemarks = [KML.Placemark(
-        KML.name(tp.Name),
-        KML.description(tp.Name),
-        KML.Point(KML.coordinates(tp.Lon, tp.Lat, tp.Altitude))
-    ) for i, tp in df_task.iterrows()]
-
-    print placemarks
+    #def turn_point_to_placemark(tp):
+    #    placemark = KML.Placemark(
+    #        KML.name(tp['Name']),
+    #        KML.description(tp['Name']),
+    #        KML.Point(
+    #            KML.coordinates(tp['Lon'], tp['Lat'], tp['Altitude'])
+    #        ),
+    #    )
+    #    return(placemark)
+    #placemarks = [turn_point_to_placemark(tp) for i, tp in df_task.iterrows()]
 
     doc = KML.kml(
         KML.Placemark(
@@ -274,7 +340,8 @@ def output_task_from_df(df_task, filename_base, output, outdir, disp):
     elif output.lower() in ['tsk', 'xcsoar']:
         task_to_xcsoar(df_task, outdir, filename_base)
     elif output.lower() in ['kml', 'google earth', 'ge', 'googleearth']:
-        task_to_kml(df_task, outdir, filename_base, disp)
+        #task_to_kml_with_pykml(df_task, outdir, filename_base, disp)
+        task_to_kml_with_yattag(df_task, outdir, filename_base, disp)
     elif output.lower() in ['gmaps', 'google maps', 'gm']:
         task_to_gmaps(df_task, outdir, filename_base, disp)
     elif output in ['matplotlib', 'mpl', 'png', 'jpg', 'bmp']:
@@ -334,6 +401,17 @@ def calculate_center(df_task):
         (df_task['Lon'].max() + df_task['Lon'].min()) / 2)
     return(center)
 
+def task_to_string(df_task):
+    """
+    Returns a string from a task DataFrame like:
+    '5.9840002060,44.0549011230,1500.0 6.0107221603,44.0150871277,1500.0 6.3285999298,44.0536003113,1600.0 6.5361166000,44.2888832092,2700.0 6.3811173439,44.4144477844,2200.0 5.9840002060,44.0549011230,1500.0'
+
+    'lon1,lat1,alt1 lon2,lat2,alt2'
+    """
+    return(" ".join(
+        df_task.apply(lambda tp: "%.10f,%.10f,%.1f" %
+         (tp.Lon, tp.Lat, tp.Altitude), axis=1)))
+
 def is_closed(df_task):
     """
     Returns boolean (True / False)
@@ -349,6 +427,7 @@ def task_tp_to_dict(df_task):
     Returns a dict
     * keys: (lat, lon) tuple
     * values: nb of times this point is being used in this task
+    This can be use for Google Maps to add only 1 marker for a given point
     """
     d_points = {}
     s_points = df_task[['Lat', 'Lon']].apply(lambda tp: (tp['Lat'], tp['Lon']), axis=1)
