@@ -122,7 +122,7 @@ def task_to_kml_with_yattag(df_task, outdir, filename_base, disp):
         <dl>            
             <dt>Google search: </dt><dd><a href="https://www.google.fr/?#safe=off&q={name}">{name}</a></dd>
         </dl>
-""".format(id=id, lat=tp.Lat, lon=tp.Lon, alt=tp.Altitude, name=tp.Name))
+""".format(lat=tp.Lat, lon=tp.Lon, alt=tp.Altitude, name=tp.Name))
 
                         """
                         with tag('dl'):
