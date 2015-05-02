@@ -92,6 +92,8 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 ![google maps](screenshots/gmaps3.jpg)
 ![google maps](screenshots/gmaps4.jpg)
 
+[See online](http://scls19fr.github.io/pycondor/gmaps/default.html)
+
 ### XCSoar (tsk)
 
 	C:\...\pycondor>python.exe condor2task.py samples/default.fpl --debug --output tsk
