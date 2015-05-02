@@ -103,6 +103,24 @@ def task_to_kml(df_task, outdir, filename_base, disp):
     (lon, lat) = ((df_task['Lon'].max()+df_task['Lon'].min()) / 2,
                 (df_task['Lat'].max()+df_task['Lat'].min()) / 2)
     
+    def turn_point_to_placemark(tp):
+        placemark = KML.Placemark(
+            KML.name(tp['Name']),
+            KML.description(tp['Name']),
+            KML.Point(
+                KML.coordinates(tp['Lon'], tp['Lat'], tp['Altitude'])
+            ),
+        )
+        return(placemark)
+
+    placemarks = [KML.Placemark(
+        KML.name(tp.Name),
+        KML.description(tp.Name),
+        KML.Point(KML.coordinates(tp.Lon, tp.Lat, tp.Altitude))
+    ) for i, tp in df_task.iterrows()]
+
+    print placemarks
+
     doc = KML.kml(
         KML.Placemark(
             KML.name("Condor Task %s" % filename_base),
@@ -121,9 +139,8 @@ def task_to_kml(df_task, outdir, filename_base, disp):
                 #GX.altitudeMode("absolute"),
                 KML.coordinates(s_coords),
             ),
-
-
-        )
+        ),
+        #*placemarks
     )
     if disp:
         print(etree.tostring(doc, pretty_print=True))
@@ -142,13 +159,6 @@ def task_to_gmaps(df_task, outdir, filename_base, disp):
     import webbrowser
     import jinja2
 
-    #center = ((df_task['Lat'].max() + df_task['Lat'].min()) / 2,
-    #    (df_task['Lon'].max() + df_task['Lon'].min()) / 2)
-
-
-    #closed = (df_task['Lat'].iloc[0] == df_task['Lat'].iloc[-1]) \
-    #    and (df_task['Lon'].iloc[0] == df_task['Lon'].iloc[-1])
-
     template_dir = os.path.join(os.path.dirname(__file__), 'templates')
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
     template = env.get_template('gmaps.tpl')
@@ -158,13 +168,13 @@ def task_to_gmaps(df_task, outdir, filename_base, disp):
     d_variables = {
         'df_task': df_task,
         'nb_wpts': len(df_task),
-        #'center': center,
-        #'closed': closed,
         'title': "Condor Task %s" % filename_base,
         'map_type': map_type,
         'json_task': task_to_json(df_task, ["Airport", "Name", "Lat", "Lon", "Altitude", "Bearing", "DistanceToGo"]),
     }
     rendered = template.render(**d_variables)
+
+    print(task_tp_to_dict(df_task))
 
     if disp:
         print(rendered)
@@ -272,3 +282,31 @@ def add_distance_bearing(df_task):
     df_task['DistanceToGoSumRev'] = df_task['DistanceToGo'].sum() - df_task['DistanceToGoSum']
     return(df_task)
 
+def calculate_center(df_task):
+    """
+    Returns tuple (Lat, Lon) of center of task
+    """
+    center = ((df_task['Lat'].max() + df_task['Lat'].min()) / 2,
+        (df_task['Lon'].max() + df_task['Lon'].min()) / 2)
+    return(center)
+
+def is_closed(df_task):
+    """
+    Returns boolean (True / False)
+    * True if last point == first point
+    * False if last point != first point
+    """
+    closed = (df_task['Lat'].iloc[0] == df_task['Lat'].iloc[-1]) \
+        and (df_task['Lon'].iloc[0] == df_task['Lon'].iloc[-1])
+    return(closed)
+
+def task_tp_to_dict(df_task):
+    """
+    Returns a dict
+    * keys: (lat, lon) tuple
+    * values: nb of times this point is being used in this task
+    """
+    d_points = {}
+    s_points = df_task[['Lat', 'Lon']].apply(lambda tp: (tp['Lat'], tp['Lon']), axis=1)
+    d_points = s_points.value_counts().to_dict()
+    return(d_points)

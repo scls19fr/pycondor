@@ -35,7 +35,24 @@ function initialize() {
         (getMaxOfArray(task["Lon"]) + getMinOfArray(task["Lon"])) / 2.0
     );
 
-    var closed = (task["Lat"][0] == task["Lat"][len-1]) && (task["Lon"][0] == task["Lon"][len-1]);
+    //var closed = (task["Lat"][0] == task["Lat"][len-1]) && (task["Lon"][0] == task["Lon"][len-1]);
+
+    // Create a dictionary with
+    // * key: turnpoint
+    // * values: number of times this turnpoint if used in this task
+    var d_points = {}
+    for (var i = 0; i < len; i++) {
+        var Lat = task["Lat"][i];
+        var Lon = task["Lon"][i];
+        var turnPoint = new google.maps.LatLng(Lat, Lon);
+        if (turnPoint in d_points) {
+            d_points[turnPoint] = d_points[turnPoint] + 1;
+        } else {
+            d_points[turnPoint] = 1;
+        }
+    }
+    //document.write(d_points)
+    //console.log(d_points)
 
     var mapOptions = {
         zoom: 10,
@@ -59,7 +76,12 @@ function initialize() {
         var turnPointStrId = (i + 1).toString();
         turnPoint = new google.maps.LatLng(Lat, Lon);
         flightPlanCoordinates.push(turnPoint);
-        if ( (i != len - 1) || (!closed) ) {
+        //if ( (i != len - 1) || (!closed) ) {
+        if (turnPoint in d_points) {
+            delete d_points[turnPoint]; // remove turnpoint from dictionary
+            // so there will be only one marker per turn point
+            // (even if it's a closed task)
+
             var marker = new google.maps.Marker({
                 position: turnPoint,
                 map: map,
