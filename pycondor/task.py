@@ -114,7 +114,6 @@ def task_to_kml_with_yattag(df_task, outdir, filename_base, disp):
                         text("%d: %s" % (id, tp.Name))
                     with tag('description'):
                         text("""
-
         <dl>
             <dt>Lat: </dt><dd>{lat}</dd>
             <dt>Lon: </dt><dd>{lon}</dd>
@@ -124,6 +123,28 @@ def task_to_kml_with_yattag(df_task, outdir, filename_base, disp):
             <dt>Google search: </dt><dd><a href="https://www.google.fr/?#safe=off&q={name}">{name}</a></dd>
         </dl>
 """.format(id=id, lat=tp.Lat, lon=tp.Lon, alt=tp.Altitude, name=tp.Name))
+
+                        """
+                        with tag('dl'):
+                            with tag('dt'):
+                                text("Lat: ")
+                            with tag('dd'):
+                                text("%.5f" % tp.Lat)
+                            with tag('dt'):
+                                text("Lon: ")
+                            with tag('dd'):
+                                text("%.5f" % tp.Lon)
+                            with tag('dt'):
+                                text("Alt: ")
+                            with tag('dd'):
+                                text("%.1f" % tp.Altitude)
+                        with tag('dl'):
+                            with tag('dt'):
+                                text("Google search: ")
+                            with tag('dd'):
+                                with tag('a', href="https://www.google.fr/?#safe=off&q=%s" % tp.Name):
+                                    text(tp.Name)
+                        """
                     with tag('Point'):
                         with tag('coordinates'):
                             text("%.5f,%.5f,%.1f" % (tp.Lon, tp.Lat, tp.Altitude))

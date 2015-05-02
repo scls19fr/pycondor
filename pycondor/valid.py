@@ -12,7 +12,7 @@ import glob
 import pandas as pd
 import numpy as np
 
-from condor_dll import ValiConDLL, iter_landscapes
+from condor_dll import ValiConDLL
 
 from constants_windows import paths_default
 
@@ -39,8 +39,8 @@ def main(condor_path, filenames):
         
     print(df_valid)
     
-    #df_valid.to_excel("valid.xls")
-        
+    df_valid.to_excel(os.path.join(basepath, "valid.xls"))
+    
     
 if __name__ == "__main__":
     main()
