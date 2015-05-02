@@ -79,7 +79,8 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 
 	C:\...\pycondor>python.exe condor2task.py samples/default.fpl --debug --output kml
 
-![google earth plot](screenshots/google_earth.jpg)
+![google earth plot](screenshots/google_earth/1.jpg)
+![google earth plot](screenshots/google_earth/2.jpg)
 
 [See file](https://raw.githubusercontent.com/scls19fr/pycondor/master/pycondor/out/default.kml)
 
@@ -87,10 +88,10 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 
 	C:\...\pycondor>python.exe condor2task.py samples/default.fpl --debug --output gmaps
 
-![google maps](screenshots/gmaps1.jpg)
-![google maps](screenshots/gmaps2.jpg)
-![google maps](screenshots/gmaps3.jpg)
-![google maps](screenshots/gmaps4.jpg)
+![google maps](screenshots/google_maps/1.jpg)
+![google maps](screenshots/google_maps/2.jpg)
+![google maps](screenshots/google_maps/3.jpg)
+![google maps](screenshots/google_maps/4.jpg)
 
 [See online](http://scls19fr.github.io/pycondor/gmaps/default.html)
 
