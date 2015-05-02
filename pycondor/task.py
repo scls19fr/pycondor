@@ -142,9 +142,12 @@ def task_to_gmaps(df_task, outdir, filename_base, disp):
     import webbrowser
     import jinja2
 
-    center = ((df_task['Lat'].max() + df_task['Lat'].min()) / 2,
-        (df_task['Lon'].max() + df_task['Lon'].min()) / 2)
+    #center = ((df_task['Lat'].max() + df_task['Lat'].min()) / 2,
+    #    (df_task['Lon'].max() + df_task['Lon'].min()) / 2)
 
+
+    #closed = (df_task['Lat'].iloc[0] == df_task['Lat'].iloc[-1]) \
+    #    and (df_task['Lon'].iloc[0] == df_task['Lon'].iloc[-1])
 
     template_dir = os.path.join(os.path.dirname(__file__), 'templates')
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
@@ -155,7 +158,8 @@ def task_to_gmaps(df_task, outdir, filename_base, disp):
     d_variables = {
         'df_task': df_task,
         'nb_wpts': len(df_task),
-        'center': center,
+        #'center': center,
+        #'closed': closed,
         'title': "Condor Task %s" % filename_base,
         'map_type': map_type,
         'json_task': task_to_json(df_task, ["Airport", "Name", "Lat", "Lon", "Altitude", "Bearing", "DistanceToGo"]),
@@ -169,7 +173,7 @@ def task_to_gmaps(df_task, outdir, filename_base, disp):
     print("Output '%s'" % filename_out)
     with open(filename_out, "wb") as fd:
         fd.write(rendered)
-        
+
     if disp:
         webbrowser.open_new(filename_out)
 

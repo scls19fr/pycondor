@@ -35,6 +35,8 @@ function initialize() {
         (getMaxOfArray(task["Lon"]) + getMinOfArray(task["Lon"])) / 2.0
     );
 
+    var closed = (task["Lat"][0] == task["Lat"][len-1]) && (task["Lon"][0] == task["Lon"][len-1]);
+
     var mapOptions = {
         zoom: 10,
         center: center,
@@ -48,7 +50,8 @@ function initialize() {
         content: ""
     });
 
-    for (var i = len - 1; i >= 0; i--) {
+    //for (var i = len - 1; i >= 0; i--) {
+    for (var i = 0; i < len; i++) {
         var Lat = task["Lat"][i];
         var Lon = task["Lon"][i];
         var Name = task["Name"][i];
@@ -56,29 +59,34 @@ function initialize() {
         var turnPointStrId = (i + 1).toString();
         turnPoint = new google.maps.LatLng(Lat, Lon);
         flightPlanCoordinates.push(turnPoint);
-        var marker = new google.maps.Marker({
-            position: turnPoint,
-            map: map,
-            title: turnPointStrId + ": " + Name
-        });
+        if ( (i != len - 1) || (!closed) ) {
+            var marker = new google.maps.Marker({
+                position: turnPoint,
+                map: map,
+                title: turnPointStrId + ": " + Name,
+                icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=' + (i + 1).toString() + '|FE6256|000000'
+            });
+        
 
-        var contentString = '<div id="content">'+
-            '<div id="siteNotice">'+
-            '</div>'+
-            '<h1 id="firstHeading" class="firstHeading">' + turnPointStrId + ": " + Name + '</h1>'+
-            '<div id="bodyContent">'+
-            '<dl>'+
-            '<dt>Lat: </dt><dd>' + Lat.toString() + '</dd>'+
-            '<dt>Lon: </dt><dd>' + Lon.toString() + '</dd>'+
-            '<dt>Alt: </dt><dd>' + Alt.toString() + '</dd>'+
-            '</dl>'+
-            '<dl>'+            
-            '<dt>Google search: </dt><dd><a href="https://www.google.fr/?#safe=off&q=' + Name + '">' + Name + '</a></dd>'+
-            '</dl>'+
-            '</div>'+
-            '</div>';
+            var contentString = '<div id="content">'+
+                '<div id="siteNotice">'+
+                '</div>'+
+                '<h1 id="firstHeading" class="firstHeading">' + turnPointStrId + ": " + Name + '</h1>'+
+                '<div id="bodyContent">'+
+                '<dl>'+
+                '<dt>Lat: </dt><dd>' + Lat.toString() + '</dd>'+
+                '<dt>Lon: </dt><dd>' + Lon.toString() + '</dd>'+
+                '<dt>Alt: </dt><dd>' + Alt.toString() + '</dd>'+
+                '</dl>'+
+                '<dl>'+            
+                '<dt>Google search: </dt><dd><a href="https://www.google.fr/?#safe=off&q=' + Name + '">' + Name + '</a></dd>'+
+                '</dl>'+
+                '</div>'+
+                '</div>';
 
-        bindInfoWindow(marker, map, infowindow, contentString);
+            bindInfoWindow(marker, map, infowindow, contentString);
+
+        }
 
 
     }
