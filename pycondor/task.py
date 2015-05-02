@@ -191,13 +191,56 @@ def task_to_json(df_task, cols=None):
     import json
     if cols is None:
         cols = ["Name", "Lat", "Lon"]
-    s_json = "{" + "\n"
-    for i, col in enumerate(cols):
-        s_json = s_json + '    "' + col + '"' + ": " + json.dumps(list(df_task[col])) + "," + "\n"
-    s_json = s_json[:-2] + "\n" # Removes last comma
-    s_json = s_json + "}"
-    return(s_json)
-    #return(df_task.to_json(orient='columns'))
+    #s_json = "{" + "\n"
+    #for i, col in enumerate(cols):
+    #    s_json = s_json + '    "' + col + '"' + ": " + json.dumps(list(df_task[col])) + "," + "\n"
+    #s_json = s_json[:-2] + "\n" # Removes last comma
+    #s_json = s_json + "}"
+    #return(s_json)
+    return(task_to_json_dict_of_list(df_task[cols]))
+
+def task_to_json_dict_of_list(df_task):
+    """
+    Returns a dict of list like:
+
+    {
+        "Lat": [44.054901123046875, 44.01508712768555, 44.0536003112793, 44.288883209228516, 44.41444778442383, 44.054901123046875],
+        "Lon": [5.984000205993652, 6.0107221603393555, 6.32859992980957, 6.536116600036621, 6.381117343902588, 5.984000205993652],
+        "Name": ["SaintAuban", "Go", "CoupeS", "3Eveches", "DORMILLOUSEFORT", "SaintAuban"]
+    }
+
+    """
+    return(json.dumps(df_task.to_dict(orient='list')))
+
+def task_to_json_list_of_list(df_task):
+    """
+    Returns a list of list (without columns name) like:
+
+    [['Saint Auban', 'Go', 'Coupe S', '3 Eveches', 'DORMILLOUSE FORT', 'Saint Auban'],
+     [44.054901123046875, 44.01508712768555, 44.0536003112793, 44.288883209228516, 44.41444778442383, 44.054901123046875],
+     [5.984000205993652, 6.0107221603393555, 6.32859992980957, 6.536116600036621, 6.381117343902588, 5.984000205993652]]
+
+    """
+    return(map(lambda callable: callable(), list(df_task.apply(lambda tp: tp.to_dict()))))
+
+def task_to_json_list_of_dict(df_task):
+    """
+    Returns a list of dict like
+
+    [{'Lat': 44.054901123046875, 'Lon': 5.984000205993652, 'Name': 'Saint Auban'},
+     {'Lat': 44.01508712768555, 'Lon': 6.0107221603393555, 'Name': 'Go'},
+     {'Lat': 44.0536003112793, 'Lon': 6.32859992980957, 'Name': 'Coupe S'},
+     {'Lat': 44.288883209228516, 'Lon': 6.536116600036621, 'Name': '3 Eveches'},
+     {'Lat': 44.41444778442383,
+      'Lon': 6.381117343902588,
+      'Name': 'DORMILLOUSE FORT'},
+     {'Lat': 44.054901123046875, 'Lon': 5.984000205993652, 'Name': 'Saint Auban'}]
+
+    """
+    lst = []
+    for i, row in df_task.iterrows():
+        lst.append(row.to_dict())
+    return(lst)
 
 def process_df_task_objects(df_task):
     for col in ['ObservationZone']: # only one object for now
