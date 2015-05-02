@@ -5,6 +5,7 @@ from constants import supported_output_formats
 
 import os
 import codecs
+import json
 
 import decimal
 
@@ -188,7 +189,6 @@ def task_to_gmaps(df_task, outdir, filename_base, disp):
         webbrowser.open_new(filename_out)
 
 def task_to_json(df_task, cols=None):
-    import json
     if cols is None:
         cols = ["Name", "Lat", "Lon"]
     #s_json = "{" + "\n"
