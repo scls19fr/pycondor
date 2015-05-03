@@ -16,6 +16,9 @@ import numpy as np
 import pandas as pd
 import json
 
+#from urllib import urlencode
+from pandas.io.common import urlencode
+
 import requests
 import requests_cache
 
@@ -89,7 +92,7 @@ def main(input_filename, outdir, disp, expire_after, samples, api_key):
         #url = "https://maps.googleapis.com/maps/api/elevation/json?path=36.578581,-118.291994|36.23998,-116.83171&samples=3"
         url = "https://maps.googleapis.com/maps/api/elevation/json"
 
-        print("Request to '%s' with\n%s" % (url, params))
+        print("Request to '%s' with\n%s\nusing url=\n%s" % (url, json.dumps(params, indent=True), url + "?" + urlencode(params)))
         response = requests.get(url, params=params)
 
         dat = response.json()
@@ -104,6 +107,13 @@ def main(input_filename, outdir, disp, expire_after, samples, api_key):
         #df_elevation = add_distance_bearing(df_elevation)
         df_elevation['Distance'] = np.linspace(0, dist_tot, samples)
 
+        from scipy import interpolate
+        df_task['RefAltitude'] = 0
+        f = interpolate.interp1d(df_elevation['Distance'], df_elevation['Elevation'])
+        df_task['RefAltitude'] = f(df_task['DistanceToGoSum'])
+        #for i, tp in df_task.iterrows():
+        #    df_task.loc[i, 'RefAltitude'] = df_task.loc[i, 'Altitude']
+
         if disp:
             print(df_elevation)
 
@@ -117,10 +127,24 @@ def main(input_filename, outdir, disp, expire_after, samples, api_key):
 
         fig = plt.figure()
         ax = fig.add_subplot(111, adjustable='box', aspect=dist_max / (elev_max * 4.0))
-        ax.plot(df_elevation['Distance'], df_elevation['Elevation'])
+        ax.plot(df_task['DistanceToGoSum'], df_task['RefAltitude'], 'o', c='r')
+        ax.plot(df_task['DistanceToGoSum'], df_task['Altitude'], 'o', c='g')
+        ax.plot(df_elevation['Distance'], df_elevation['Elevation'], c='b')
+        y_max = df_elevation['Elevation'].max() + 500 * 2
+        x_max = df_elevation['Distance'].max()
+        for i, tp in df_task.iterrows():
+            ax.annotate(tp.Name,
+                xy = (tp.DistanceToGoSum, tp.RefAltitude + 100),
+                xytext = (tp.DistanceToGoSum + x_max * 0.005, tp.RefAltitude + y_max * 0.01 + (150 if i==0 else 50)),
+                rotation = 0,
+                #arrowprops = dict(facecolor='black', shrink=0.01),
+            )
+            plt.plot((tp.DistanceToGoSum, tp.DistanceToGoSum), (0, y_max), 'k-')
+            
         ax.set_title("Ground elevation for '%s'" % filename_base)
         ax.set_xlabel('Distance (km)')
         ax.set_ylabel('Elevation (m)')
+        ax.set_ylim((0, y_max))
         ax.grid(True)
         #forceAspect(ax,aspect=2.0)
 
