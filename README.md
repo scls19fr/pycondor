@@ -109,7 +109,7 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 
 	C:\...\pycondor>python.exe elevation.py out/default.xls
 
-![Elevation](screenshots/elevation_default.jpg)
+![Elevation](screenshots/elevation_default.png)
 
 ## Help
 You can get command line help using:
