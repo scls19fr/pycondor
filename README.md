@@ -105,6 +105,12 @@ See [ToDo](https://github.com/scls19fr/pycondor/wiki/ToDo) Any help is Welcome!
 ![XCSoar](screenshots/XCSoar6/04.jpg)
 ![XCSoar](screenshots/XCSoar6/05.jpg)
 
+### Ground elevation chart from Google Maps API
+
+	C:\...\pycondor>python.exe elevation.py out/default.xls
+
+![Elevation](screenshots/elevation_default.jpg)
+
 ## Help
 You can get command line help using:
 

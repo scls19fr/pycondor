@@ -422,16 +422,17 @@ def calculate_center(df_task):
         (df_task['Lon'].max() + df_task['Lon'].min()) / 2)
     return(center)
 
-def task_to_string(df_task):
+def task_to_string(df_task, sep=',', sep_points=" "):
     """
-    Returns a string from a task DataFrame like:
+    Returns a string from a task DataFrame
+    with sep=',' and sep_points=" "
+    like:
     '5.9840002060,44.0549011230,1500.0 6.0107221603,44.0150871277,1500.0 6.3285999298,44.0536003113,1600.0 6.5361166000,44.2888832092,2700.0 6.3811173439,44.4144477844,2200.0 5.9840002060,44.0549011230,1500.0'
-
     'lon1,lat1,alt1 lon2,lat2,alt2'
     """
-    return(" ".join(
-        df_task.apply(lambda tp: "%.10f,%.10f,%.1f" %
-         (tp.Lon, tp.Lat, tp.Altitude), axis=1)))
+    return(sep_points.join(
+        df_task.apply(lambda tp: "%.10f%s%.10f%s%.1f" %
+         (tp.Lon, sep, tp.Lat, sep, tp.Altitude), axis=1)))
 
 def is_closed(df_task):
     """
