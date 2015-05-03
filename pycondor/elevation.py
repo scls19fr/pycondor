@@ -127,19 +127,19 @@ def main(input_filename, outdir, disp, expire_after, samples, api_key):
 
         fig = plt.figure()
         ax = fig.add_subplot(111, adjustable='box', aspect=dist_max / (elev_max * 4.0))
-        ax.plot(df_task['DistanceToGoSum'], df_task['RefAltitude'], 'o', c='r')
-        ax.plot(df_task['DistanceToGoSum'], df_task['Altitude'], 'o', c='g')
         ax.plot(df_elevation['Distance'], df_elevation['Elevation'], c='b')
         y_max = df_elevation['Elevation'].max() + 500 * 2
         x_max = df_elevation['Distance'].max()
         for i, tp in df_task.iterrows():
+            plt.plot((tp.DistanceToGoSum, tp.DistanceToGoSum), (0, y_max), '-', color='0.6') # 0=black 1=white
             ax.annotate(tp.Name,
                 xy = (tp.DistanceToGoSum, tp.RefAltitude + 100),
-                xytext = (tp.DistanceToGoSum + x_max * 0.005, tp.RefAltitude + y_max * 0.01 + (150 if i==0 else 50)),
+                xytext = (tp.DistanceToGoSum + x_max * 0.005, tp.RefAltitude + y_max * 0.01 + (-150 if i==0 else 50)),
                 rotation = 0,
                 #arrowprops = dict(facecolor='black', shrink=0.01),
             )
-            plt.plot((tp.DistanceToGoSum, tp.DistanceToGoSum), (0, y_max), 'k-')
+        ax.plot(df_task['DistanceToGoSum'], df_task['RefAltitude'], 'o', c='r')
+        ax.plot(df_task['DistanceToGoSum'], df_task['Altitude'], 'o', c='g')
             
         ax.set_title("Ground elevation for '%s'" % filename_base)
         ax.set_xlabel('Distance (km)')
