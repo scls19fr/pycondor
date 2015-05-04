@@ -42,6 +42,8 @@ import matplotlib.pyplot as plt
 from task import create_task_dataframe, output_task_from_df, add_distance_bearing
 from task_settings import SettingsTask, add_observation_zone
 
+from tools import haversine_distance
+
 from enum import Enum # enum34
 
 WaypointStyle = Enum("WaypointStyle", "Normal AirfieldGrass Outlanding GliderSite AirfieldSolid MtPass MtTop Sender Vor Ndb CoolTower Dam Tunnel Bridge PowerPlant Castle Intersection")
@@ -106,9 +108,9 @@ def latlon2decimal(s):
         mm = decimal.Decimal(s[2:-1])
         x = dd + mm/decimal.Decimal('60')
         direction = s[-1]
-        if direction in ['N', 'W']:
+        if direction in ['N', 'E']:
             return(x)
-        elif direction in ['S', 'E']:
+        elif direction in ['S', 'W']:
             return(-x)
         else:
             raise(NotImplementedError("Can't convert %s" % s))
@@ -137,7 +139,10 @@ def dist2decimal(s):
 @click.option('--outdir', default='',
         help="Output directory - default is 'script_directory\out'")
 @click.option('--disp/--no-disp', default=True)
-def main(debug, waypoints_filename, output, outdir, disp):
+@click.option('--lat', default=44.0800495, help="Latitude")
+@click.option('--lon', default=5.9941875, help="Longitude")
+@click.option('--dist', default=200, help="Longitude")
+def main(debug, waypoints_filename, output, outdir, disp, lat, lon, dist):
     basepath = os.path.dirname(__file__)
     
     if outdir=='':
@@ -190,7 +195,15 @@ def main(debug, waypoints_filename, output, outdir, disp):
             df_waypoints['Lon'] = df_waypoints['Lon'].map(latlon2decimal)
             df_waypoints['Altitude'] = df_waypoints['Altitude'].map(dist2decimal)
             df_waypoints['Runway length'] = df_waypoints['Runway length'].map(dist2decimal)
+
+            df_waypoints['Distance'] = df_waypoints.apply(lambda wpt: haversine_distance(lat, lon, wpt['Lat'], wpt['Lon']), axis=1)
+            df_waypoints = df_waypoints.sort(columns=['Distance'])
+
+            df_waypoints = df_waypoints[df_waypoints['Distance']<=dist]
+
             print(df_waypoints)
+
+
             print("Creating KML file (please wait)")
             task_to_kml_with_yattag(df_waypoints, outdir, filename_base)
             # Too many markers!!!
