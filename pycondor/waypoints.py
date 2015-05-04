@@ -45,6 +45,8 @@ from task_settings import SettingsTask, add_observation_zone
 from enum import Enum # enum34
 
 WaypointStyle = Enum("WaypointStyle", "Normal AirfieldGrass Outlanding GliderSite AirfieldSolid MtPass MtTop Sender Vor Ndb CoolTower Dam Tunnel Bridge PowerPlant Castle Intersection")
+# str(WaypointStyle.Normal) display "WaypointStyle.Normal"
+# make a class to overload __str__ and display only "Normal"
 
 def task_to_kml_with_yattag(df_waypoints, outdir, filename_base):
     from yattag import Doc, indent
