@@ -104,9 +104,11 @@ def task_to_kml_with_yattag(df_waypoints, outdir, filename_base):
 
 def latlon2decimal(s):
     try:
-        dd = decimal.Decimal(s[0:2])
-        mm = decimal.Decimal(s[2:-1])
-        x = dd + mm/decimal.Decimal('60')
+        while(len(s)<10):
+            s = "0" + s
+        dd = decimal.Decimal(s[0:3])
+        mm = decimal.Decimal(s[3:-1])
+        x = dd + mm / decimal.Decimal('60')
         direction = s[-1]
         if direction in ['N', 'E']:
             return(x)
@@ -128,7 +130,7 @@ def dist2decimal(s):
             #use Pint?
         return(x)
     except:
-        print("Can't convert %s" % s)
+        #print("Can't convert %s" % s)
         return(np.nan)
 
 @click.command()
