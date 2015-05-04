@@ -31,8 +31,10 @@ import traceback
 import logging
 import logging.config
 
+import numpy as np
 import pandas as pd
-#import decimal
+import decimal
+
 #import matplotlib as mpl
 #mpl.use('Agg')
 import matplotlib.pyplot as plt
@@ -40,8 +42,90 @@ import matplotlib.pyplot as plt
 from task import create_task_dataframe, output_task_from_df, add_distance_bearing
 from task_settings import SettingsTask, add_observation_zone
 
+from enum import Enum # enum34
 
-#import geopy
+WaypointStyle = Enum("WaypointStyle", "Normal AirfieldGrass Outlanding GliderSite AirfieldSolid MtPass MtTop Sender Vor Ndb CoolTower Dam Tunnel Bridge PowerPlant Castle Intersection")
+
+def task_to_kml_with_yattag(df_waypoints, outdir, filename_base):
+    from yattag import Doc, indent
+    from lxml import etree
+    from pykml.parser import Schema
+
+    doc, tag, text = Doc().tagtext()
+
+    #doc.asis('<?xml version="1.0" encoding="UTF-8"?>')
+    with tag('kml'):
+        doc.attr(
+            ("xmlns:gx", "http://www.google.com/kml/ext/2.2"),
+            ("xmlns:atom", "http://www.w3.org/2005/Atom"),
+            ("xmlns", "http://www.opengis.net/kml/2.2")
+        )
+        with tag('Document'):
+            with tag('name'):
+                text('Waypoints')
+            for i, wpt in df_waypoints.iterrows():
+                id = i + 1
+                with tag('Placemark'):
+                    with tag('name'):
+                        text(wpt.Name)
+                    with tag('description'):
+                        text("""
+        <dl>
+            <dt>Lat: </dt><dd>{lat}</dd>
+            <dt>Lon: </dt><dd>{lon}</dd>
+            <dt>Alt: </dt><dd>{alt}</dd>
+        </dl>
+        <dl>            
+            <dt>Google search: </dt><dd><a href="https://www.google.fr/?#safe=off&q={name}">{name}</a></dd>
+        </dl>
+""".format(lat=wpt.Lat, lon=wpt.Lon, alt=wpt.Altitude, name=wpt.Name))
+
+                    with tag('Point'):
+                        with tag('coordinates'):
+                            text("%.5f,%.5f,%.1f" % (wpt.Lon, wpt.Lat, wpt.Altitude))
+
+    result = indent(
+        doc.getvalue(),
+        indentation = ' '*4,
+        newline = '\r\n'
+    )
+
+    filename_out = os.path.join(outdir, "wpt_" + filename_base + '.kml')
+    print("Output '%s'" % filename_out)
+    outfile = file(filename_out,'w')
+    outfile.write(result)
+
+    doc = etree.fromstring(result)
+    assert Schema('kml22gx.xsd').validate(doc)
+
+def latlon2decimal(s):
+    try:
+        dd = decimal.Decimal(s[0:2])
+        mm = decimal.Decimal(s[2:-1])
+        x = dd + mm/decimal.Decimal('60')
+        direction = s[-1]
+        if direction in ['N', 'W']:
+            return(x)
+        elif direction in ['S', 'E']:
+            return(-x)
+        else:
+            raise(NotImplementedError("Can't convert %s" % s))
+    except:
+        print("Can't convert %s" % s)
+        return(np.nan)
+
+def dist2decimal(s):
+    try:
+        x = decimal.Decimal(s[:-1])
+        unit = s[-1]
+        if unit != 'm':
+            raise(NotImplementedError("Unit is %s" % s))
+            #ToDo: use ft, nm, ml
+            #use Pint?
+        return(x)
+    except:
+        print("Can't convert %s" % s)
+        return(np.nan)
 
 @click.command()
 @click.option('--debug/--no-debug', default=False, help="debug mode")
@@ -90,10 +174,26 @@ def main(debug, waypoints_filename, output, outdir, disp):
                     'Airport Frequency', 'Description']
             df_waypoints = pd.read_csv(filename, names=cols)
 
-            print(df_waypoints)
+            df_waypoints = df_waypoints.rename(columns={
+                'Latitude': 'Lat',
+                'Longitude': 'Lon',
+                'Elevation': 'Altitude',
+            })
+            #print(df_waypoints)
             # ToDo: rename columns
             # ToDo: map columns (at least Lat, Lon)
             # ToDo: create kml file
+            df_waypoints['Waypoint style'] = df_waypoints['Waypoint style'].map(WaypointStyle)
+            df_waypoints['Lat'] = df_waypoints['Lat'].map(latlon2decimal)
+            df_waypoints['Lon'] = df_waypoints['Lon'].map(latlon2decimal)
+            df_waypoints['Altitude'] = df_waypoints['Altitude'].map(dist2decimal)
+            df_waypoints['Runway length'] = df_waypoints['Runway length'].map(dist2decimal)
+            print(df_waypoints)
+            print("Creating KML file (please wait)")
+            task_to_kml_with_yattag(df_waypoints, outdir, filename_base)
+            # Too many markers!!!
+            # Use Google Maps instead
+            # see https://developers.google.com/maps/articles/toomanymarkers
 
         except:
             logging.error(traceback.format_exc())

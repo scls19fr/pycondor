@@ -106,7 +106,7 @@ def task_to_kml_with_yattag(df_task, outdir, filename_base, disp):
         )
         with tag('Document'):
             with tag('name'):
-                text('Condor task default')
+                text("Condor task '%s'" % filename_base)
             for i, tp in df_task.iterrows():
                 id = i + 1
                 with tag('Placemark'):
@@ -211,7 +211,7 @@ def task_to_kml_with_pykml(df_task, outdir, filename_base, disp):
 
     doc = KML.kml(
         KML.Placemark(
-            KML.name("Condor Task %s" % filename_base),
+            KML.name("Condor task '%s'" % filename_base),
             KML.LookAt(
                 KML.longitude(lon),
                 KML.latitude(lat),
