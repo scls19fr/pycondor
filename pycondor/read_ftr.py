@@ -22,9 +22,29 @@ __status__ = "Development"
 
 """
 Read Condor Soaring - Flight Track Record .ftr
+
+50km.ftr
+Bex (GMaps: 46.2566682,6.9868854,410)
+6.9868854 -> (float) 0x40df9491 -> (double) 0x401bf291fb3fa6df
+TPPosX0=93037.734375 -> (float) 0x47b5b6de ->  (double) 0x40f6b6dbc0000000
+TPPosY0=47881.1484375 -> 0x473b0926 -> 0x40e76124c0000000
+TPPosZ0=399 -> 0x43c78000 -> 0x4078f00000000000
+
+lon = 6.9868854
+lat = 46.2566682
+PosX = 93037.734375
+PosY = 47881.1484375
+PosZ = 399.0
+
+...
+
+Raron
+Coordonnées : 46.18.221N / 7.49.404E => 46.30368333333333336 / 7.8234
+TPPosX2=28706.744140625 -> 0x46e0457d -> 0x40dc08afa0000000
+TPPosY2=52222.98046875 -> 0x474bfefb -> 0x40e97fdf60000000
+TPPosZ2=637 -> 0x441f4000 -> 0x4083e80000000000
+
 """
-from constants import supported_input_extensions, \
-    supported_versions, supported_output_formats
 
 import click
 
@@ -32,17 +52,31 @@ import os
 import traceback
 
 import numpy as np
-#import pandas as pd
+import pandas as pd
+import matplotlib.pyplot as plt
 
 import struct
 import pprint
 
-
-def to_hex_str(d):
+def to_hex_str(d, len_tot=2):
     s = hex(d)[2:].upper()
-    s = str("0" * (2 - len(s)) + s)
+    s = str("0" * (len_tot - len(s)) + s)
     return(s)
 
+def float_to_hex(f):
+    return hex(struct.unpack('<I', struct.pack('<f', f))[0])
+
+def double_to_hex(f):
+    return hex(struct.unpack('<Q', struct.pack('<d', f))[0])
+
+def print_line(offset, s_hex):
+    print("%08d: %s" % (offset, s_hex))
+
+def hexify(df):
+    return(df.applymap(to_hex_str))
+
+def reverse_bytes(df):
+    return(df[::-1])
 
 @click.command()
 @click.argument('ftr_filename')
@@ -54,16 +88,36 @@ def main(ftr_filename, offset, cols, rows):
     pp = pprint.PrettyPrinter(indent=4)
     print("Reading '%s'" % ftr_filename)
     marker_length = 4 # bytes
+    frame_length = 32 # bytes
+    length = marker_length + frame_length # 36 bytes
+    alphabet = "".join(map(lambda x: str(x), range(10))) # 0123456789
+    header ="".join([" "+ alphabet[i % 10] for i in range(frame_length)])
+    print_line(0, header)
     #np.set_printoptions(threshold=2)
+    #print [i+"a" for i in range(frame_length+marker_length)]
     a_bytes = np.fromfile(ftr_filename, dtype=np.dtype('u1')) # Read file in a Numpy Array
-    for i in range(50):
-        a_bytes_slice = a_bytes[offset+i*(32+marker_length):]
-        #print(a_bytes)
-        vfunc = np.vectorize(to_hex_str)
-        a_str_hex = vfunc(a_bytes_slice)
-        #print(a_str_hex)
-        #print("".join(a_str_hex[:32+marker_length]))
-        print("".join(a_str_hex[marker_length:32+marker_length]))
+    a_bytes_slice = a_bytes[offset:]
+    N = len(a_bytes_slice)
+    assert (N % length) == 0, "len==%d is not a multiple of %d" % (N, length)
+    #a_bytes_slice.resize(N/length, length)
+    # reshape != resize
+    a_bytes_slice = a_bytes_slice.reshape(N/length, length)
+    #a_bytes_slice = a_bytes_slice.reshape(N)
+    pd.set_option('display.max_columns', 40)
+    df_bytes = pd.DataFrame(a_bytes_slice)
+    vfunc = np.vectorize(to_hex_str)
+
+    print(df_bytes)
+    #for i in range(50):
+    #    #print(a_bytes)
+    #    a_str_hex = vfunc(a_bytes_slice)
+    #    #print(a_str_hex)
+    #    #print("".join(a_str_hex[:frame_length+marker_length]))
+    #    s_hex = "".join(a_str_hex[marker_length:frame_length+marker_length])
+    #    print_line(offset, s_hex)
+    #    #print("%08d: %s r" % (offset, s_hex[::-1]))
+    #    offset = offset + frame_length + marker_length
+    #    #print("")
     #a_str_hex_slice = a_str_hex[offset:(offset+cols*rows)]
     #pp.pprint(a_str_hex_slice.reshape(rows,cols)) #.tolist())
 
