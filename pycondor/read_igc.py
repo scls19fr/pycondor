@@ -171,13 +171,27 @@ def main(igc_filename, z_mode, outdir, disp):
 
     s_tuple = df_points[0].map(igc_b_line_to_tuple)
 
+    m = 100
+    g = 9.81
     df_points['Time'] = s_tuple.map(lambda t: t[0])
+    df_points['TimeSup'] = (df_points['Time'] < df_points['Time'].shift(1)).astype(int).cumsum()
+    #df_points['Deltatime'] = df_points['Time'] - df_points['Time'].shift(1)
+    df_points['Deltatime'] = 10 # seconds
     df_points['Lat'] = s_tuple.map(lambda t: t[1])
     df_points['Lon'] = s_tuple.map(lambda t: t[2])
+    df_points['Lat2'] = df_points['Lat'].shift(1)
+    df_points['Lon2'] = df_points['Lon'].shift(1)
+    from tools import haversine_distance
+    df_points['Speed'] = 3600 * df_points.apply(lambda pt: haversine_distance(pt['Lat'], pt['Lon'], pt['Lat2'], pt['Lon2']), axis=1) / df_points['Deltatime']
+    df_points['Ec'] = 0.5 * m * df_points['Speed']**2 # kinetic energy
     df_points['Z_mode'] = s_tuple.map(lambda t: t[3][0])
     df_points['Z_baro'] = s_tuple.map(lambda t: t[3][1])
     df_points['Z_gps'] = s_tuple.map(lambda t: t[3][2])
     df_points['Altitude'] = df_points["Z_%s" % z_mode]
+    df_points['Vz'] = (df_points['Altitude'] - df_points['Altitude'].shift(1)) / df_points['Deltatime']
+    df_points['Ep'] = m * g * df_points['Altitude'] - m * g * df_points['Altitude'].loc[0] # potential energy
+    df_points['Em'] = df_points['Ec'] + df_points['Ep']
+
     df_points['Name'] = ""
     df_points['Name'].loc[0] = "Start"
     df_points['Name'].loc[Npts-1] = "Finish"
