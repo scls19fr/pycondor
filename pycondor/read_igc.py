@@ -30,6 +30,7 @@ import matplotlib.pyplot as plt
 import datetime
 import pytz
 import decimal
+from tools import haversine_distance
 
 def latlon2decimal(s):
     try:
@@ -157,8 +158,8 @@ def main(igc_filename, z_mode, outdir, disp):
 
     filename = igc_filename
     filename_base, filename_ext = os.path.splitext(os.path.basename(filename))
-    df_points = pd.read_csv(filename, header=None)
-    df_points['FirstChar'] = df_points[0].map(lambda s: s[0])
+    df_points = pd.read_csv(filename, header=None, names=['Data'])
+    df_points['FirstChar'] = df_points['Data'].map(lambda s: s[0])
     df_points = df_points[df_points['FirstChar']=='B']
     Npts = len(df_points)
     df_points.index = np.arange(Npts)
@@ -169,7 +170,7 @@ def main(igc_filename, z_mode, outdir, disp):
     #dat = igc_b_line_to_tuple(s)
     #print(dat)
 
-    s_tuple = df_points[0].map(igc_b_line_to_tuple)
+    s_tuple = df_points['Data'].map(igc_b_line_to_tuple)
 
     m = 100
     g = 9.81
@@ -181,20 +182,33 @@ def main(igc_filename, z_mode, outdir, disp):
     df_points['Lon'] = s_tuple.map(lambda t: t[2])
     df_points['Lat2'] = df_points['Lat'].shift(1)
     df_points['Lon2'] = df_points['Lon'].shift(1)
-    from tools import haversine_distance
-    df_points['Speed'] = 3600 * df_points.apply(lambda pt: haversine_distance(pt['Lat'], pt['Lon'], pt['Lat2'], pt['Lon2']), axis=1) / df_points['Deltatime']
+    df_points['Speed'] = 1000 * df_points.apply(lambda pt: haversine_distance(pt['Lat'], pt['Lon'], pt['Lat2'], pt['Lon2']), axis=1) / df_points['Deltatime']
+    df_points['Speed'] = df_points['Speed'].fillna(0.0)
+    df_points.drop(['Lat2', 'Lon2'], axis=1, inplace=True)
     df_points['Ec'] = 0.5 * m * df_points['Speed']**2 # kinetic energy
     df_points['Z_mode'] = s_tuple.map(lambda t: t[3][0])
     df_points['Z_baro'] = s_tuple.map(lambda t: t[3][1])
     df_points['Z_gps'] = s_tuple.map(lambda t: t[3][2])
     df_points['Altitude'] = df_points["Z_%s" % z_mode]
     df_points['Vz'] = (df_points['Altitude'] - df_points['Altitude'].shift(1)) / df_points['Deltatime']
+    df_points['Vz'] = df_points['Vz'].fillna(0.0)
     df_points['Ep'] = m * g * df_points['Altitude'] - m * g * df_points['Altitude'].loc[0] # potential energy
     df_points['Em'] = df_points['Ec'] + df_points['Ep']
+    df_points['Vz_comp'] = (df_points['Em'] - df_points['Em'].shift(1)) / (df_points['Deltatime'] * m *g)
+    df_points['Vz_comp'] = df_points['Vz_comp'].fillna(0.0)
+
+    """
+    Ep = m g z
+    Ec = 1/2 m v^2
+    Em = Ep + Ec
+    
+    """
+
+    print("yo"*10)
 
     df_points['Name'] = ""
-    df_points['Name'].loc[0] = "Start"
-    df_points['Name'].loc[Npts-1] = "Finish"
+    df_points.loc[0, "Name"] = "Start"
+    df_points.loc[Npts-1, "Name"] = "Finish"
 
     df_points = df_points.set_index('Time')
     print(df_points)
