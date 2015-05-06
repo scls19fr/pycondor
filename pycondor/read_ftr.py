@@ -23,13 +23,43 @@ __status__ = "Development"
 """
 Read Condor Soaring - Flight Track Record .ftr
 
+
+0x00: Heure, float32
+0x04: X, float32 // Coordonnées internes à Condor 
+0x08: Y, float32 // Coordonnées internes à Condor 
+0x0C: Altitude, float32
+0x10: float32*4 = Quaternion (x,y,z axis and w scalar)
+0x20: Distance parcourue, float32 (non utilisé)
+
+
+offset=1859
+F3 2E 00 00 -> unsigned int little -> 12019
+number of points
+
+t=pd.Series([12.00001, 12.000151, 12.000290, 12.000429, 12.000572])
+
+In [14]: (t-t.shift())*3600
+Out[14]:
+0       NaN
+1    0.5076
+2    0.5004
+3    0.5004
+4    0.5148
+dtype: float64
+
+import datetime
+timestamp_offset = 0
+(t*3600.0).map(lambda s: datetime.datetime.utcfromtimestamp(s+timestamp_offset))
+
 50km.ftr
 Bex (GMaps: 46.2566682,6.9868854,410)
 6.9868854 -> (float) 0x40df9491 -> (double) 0x401bf291fb3fa6df
 TPPosX0=93037.734375 -> (float) 0x47b5b6de ->  (double) 0x40f6b6dbc0000000
     0E66B547 (floats little) -> 92876
 TPPosY0=47881.1484375 -> 0x473b0926 -> 0x40e76124c0000000
+    C6D23947 (floats little) -> 47570
 TPPosZ0=399 -> 0x43c78000 -> 0x4078f00000000000
+    AF5BC843 (floats little) -> 400.7
 
 lon = 6.9868854
 lat = 46.2566682
@@ -88,12 +118,13 @@ def main(ftr_filename, offset, cols, rows):
     basepath = os.path.dirname(__file__)
     pp = pprint.PrettyPrinter(indent=4)
     print("Reading '%s'" % ftr_filename)
-    marker_length = 4 # bytes
-    frame_length = 32 # bytes
-    length = marker_length + frame_length # 36 bytes
-    alphabet = "".join(map(lambda x: str(x), range(10))) # 0123456789
-    header ="".join([" "+ alphabet[i % 10] for i in range(frame_length)])
-    print_line(0, header)
+    #marker_length = 4 # bytes
+    #frame_length = 32 # bytes
+    #length = marker_length + frame_length # 36 bytes
+    length = 36
+    #alphabet = "".join(map(lambda x: str(x), range(10))) # 0123456789
+    #header ="".join([" "+ alphabet[i % 10] for i in range(frame_length)])
+    #print_line(0, header)
     #np.set_printoptions(threshold=2)
     #print [i+"a" for i in range(frame_length+marker_length)]
     a_bytes = np.fromfile(ftr_filename, dtype=np.dtype('u1')) # Read file in a Numpy Array
@@ -109,6 +140,7 @@ def main(ftr_filename, offset, cols, rows):
     vfunc = np.vectorize(to_hex_str)
 
     print(df_bytes)
+    print(hexify(df_bytes))
     #for i in range(50):
     #    #print(a_bytes)
     #    a_str_hex = vfunc(a_bytes_slice)
