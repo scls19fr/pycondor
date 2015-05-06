@@ -27,6 +27,7 @@ Read Condor Soaring - Flight Track Record .ftr
 Bex (GMaps: 46.2566682,6.9868854,410)
 6.9868854 -> (float) 0x40df9491 -> (double) 0x401bf291fb3fa6df
 TPPosX0=93037.734375 -> (float) 0x47b5b6de ->  (double) 0x40f6b6dbc0000000
+    0E66B547 (floats little) -> 92876
 TPPosY0=47881.1484375 -> 0x473b0926 -> 0x40e76124c0000000
 TPPosZ0=399 -> 0x43c78000 -> 0x4078f00000000000
 
