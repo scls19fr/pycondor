@@ -10,12 +10,9 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from construct import Struct, Bytes, ULInt32, LFloat32, Array
+from construct import Struct, Bytes, ULInt32, LFloat32, Array, String
 
-@click.command()
-@click.argument('ftr_filename')
-def main(ftr_filename):
-
+def read_ftr(filename, delete_keys=None):
     offset_size = 1859
 
     ftr_record_struct = Struct("record",
@@ -31,16 +28,16 @@ def main(ftr_filename):
     )
 
     ftr_struct = Struct("ftr_header",
-        Bytes("undefined", offset_size),
+        String("filetype", 4),
+        Bytes("unknown", offset_size-4),
         ULInt32("length"), # uint32 (4 bytes) @ 1859
         Array(lambda ctx: ctx.length, ftr_record_struct),
     )
 
-    with open(ftr_filename, "rb") as fd:
+    with open(filename, "rb") as fd:
         dat = ftr_struct.parse_stream(fd)
 
-    a_bytes = dat['record']
-    df_ftr = pd.DataFrame(a_bytes)
+    df_ftr = pd.DataFrame(dat['record'])
 
     df_ftr['Datetime'] = pd.to_datetime(df_ftr['Datetime'] * 3600.0, unit='s')
     df_ftr['Timedelta'] = df_ftr['Datetime'] - df_ftr['Datetime'].shift(1)
@@ -48,7 +45,21 @@ def main(ftr_filename):
     df_ftr['Vz'] = ((df_ftr['Alt'] - df_ftr['Alt'].shift(1)).fillna(0) / df_ftr['Timedelta']).fillna(0)
     df_ftr = df_ftr.set_index('Datetime')
 
-    print(df_ftr)
+    dat['record'] = df_ftr
+
+    if delete_keys is not None:
+        for key in delete_keys:
+            del dat[key]
+
+    return(dat)
+
+@click.command()
+@click.argument('ftr_filename')
+def main(ftr_filename):
+    dat = read_ftr(ftr_filename, delete_keys=['unknown'])
+    df_ftr = dat['record']
+    assert dat['length'] == 12019 # with 50km.ftr
+    print(dat)
 
     df_ftr['Alt'].plot()
     plt.show()
