@@ -111,50 +111,50 @@ def reverse_bytes(df):
 
 @click.command()
 @click.argument('ftr_filename')
-@click.option('--offset', default=0, help="Offset") # 1895
-@click.option('--cols', default=10, help="Nb of columns")
-@click.option('--rows', default=4, help="Nb of rows")
-def main(ftr_filename, offset, cols, rows):
+def main(ftr_filename):
     basepath = os.path.dirname(__file__)
-    pp = pprint.PrettyPrinter(indent=4)
+
+    ftr_filename = "/Users/scls/Downloads/50km.ftr"
+
+    #pp = pprint.PrettyPrinter(indent=4)
     print("Reading '%s'" % ftr_filename)
-    #marker_length = 4 # bytes
-    #frame_length = 32 # bytes
-    #length = marker_length + frame_length # 36 bytes
-    length = 36
-    #alphabet = "".join(map(lambda x: str(x), range(10))) # 0123456789
-    #header ="".join([" "+ alphabet[i % 10] for i in range(frame_length)])
-    #print_line(0, header)
-    #np.set_printoptions(threshold=2)
-    #print [i+"a" for i in range(frame_length+marker_length)]
-    a_bytes = np.fromfile(ftr_filename, dtype=np.dtype('u1')) # Read file in a Numpy Array
-    a_bytes_slice = a_bytes[offset:]
-    N = len(a_bytes_slice)
-    assert (N % length) == 0, "len==%d is not a multiple of %d" % (N, length)
-    #a_bytes_slice.resize(N/length, length)
-    # reshape != resize
-    a_bytes_slice = a_bytes_slice.reshape(N/length, length)
-    #a_bytes_slice = a_bytes_slice.reshape(N)
-    pd.set_option('display.max_columns', 40)
-    df_bytes = pd.DataFrame(a_bytes_slice)
-    vfunc = np.vectorize(to_hex_str)
+    #ftr_dtype = np.dtype([
+    #    ("time", np.float32),
+    #    ("PosX", np.float32),
+    #    ("PosY", np.float32),
+    #    ("Alt", np.float32),
+    #    ("Qx", np.float32),
+    #    ("Qy", np.float32),
+    #    ("Qz", np.float32),
+    #    ("Qw", np.float32),
+    #    ("dist", np.float32),
+    #])
 
-    print(df_bytes)
-    print(hexify(df_bytes))
-    #for i in range(50):
-    #    #print(a_bytes)
-    #    a_str_hex = vfunc(a_bytes_slice)
-    #    #print(a_str_hex)
-    #    #print("".join(a_str_hex[:frame_length+marker_length]))
-    #    s_hex = "".join(a_str_hex[marker_length:frame_length+marker_length])
-    #    print_line(offset, s_hex)
-    #    #print("%08d: %s r" % (offset, s_hex[::-1]))
-    #    offset = offset + frame_length + marker_length
-    #    #print("")
-    #a_str_hex_slice = a_str_hex[offset:(offset+cols*rows)]
-    #pp.pprint(a_str_hex_slice.reshape(rows,cols)) #.tolist())
+    ftr_dtype = np.dtype([
+        ("Datetime", "<f32"),
+        ("PosX", "<f32"),
+        ("PosY", "<f32"),
+        ("Alt", "<f32"),
+        ("Qx", "<f32"),
+        ("Qy", "<f32"),
+        ("Qz", "<f32"),
+        ("Qw", "<f32"),
+        ("dist", "<f32"),
+    ])
 
-    #print("".join(a_str_hex_slice))
+    offset_size = 1859
+    N = 12019
+    offset_array = 1863
+
+    a_bytes = np.memmap(ftr_filename, dtype=ftr_dtype, mode='r', offset=offset_array, shape=N)
+    df_ftr = pd.DataFrame(a_bytes)
+
+    df_ftr['Datetime'] = pd.to_datetime(df_ftr['Datetime'] * 3600.0, unit='s')
+    df_ftr = df_ftr.set_index('Datetime')
+
+    
+    df_ftr['Alt'].plot()
+    plt.show()
         
 if __name__ == '__main__':
     main()
