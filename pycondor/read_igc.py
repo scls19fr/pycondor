@@ -161,33 +161,6 @@ def main(igc_filename, z_mode, outdir, disp):
     df_points = pd.read_csv(filename, header=None, names=['Data'])
     df_points['FirstChar'] = df_points['Data'].map(lambda s: s[0])
 
-
-    #import re
-
-    #D_RECORD_RE = {}
-    #D_RECORD_RE['A'] = r'A(.*)\Z'
-    #D_RECORD_RE['B'] = r'B(\d{2})(\d{2})(\d{2})(\d{2})(\d{5})([NS])' \
-    #          r'(\d{3})(\d{5})([EW])([AV])(\d{5})(\d{5}).*\Z'
-    #D_RECORD_RE['C'] = r'C(\d{2})(\d{5})([NS])(\d{3})(\d{5})([EW])(.*)\Z'
-    #D_RECORD_RE['E'] = r'E(\d{2})(\d{2})(\d{2})(\w{3})(.*)\Z'
-    #D_RECORD_RE['G'] = r'G(.*)\Z'
-    #D_RECORD_RE['HFDTE'] = r'H(F)(DTE)(\d\d)(\d\d)(\d\d)\Z'
-    #D_RECORD_RE['HFFXA'] = r'H(F)(FXA)(\d+)\Z'
-    #D_RECORD_RE['H'] = r'H([FOP])([A-Z]{3}).*?:(.*)\Z'
-    #D_RECORD_RE['I'] = r'(\d{2})(\d{2})(\w{3})\Z'
-    #D_RECORD_RE['L'] = r'L(.*)\Z'
-
-    #for key, pattern in D_RECORD_RE.items():
-    #    D_RECORD_RE[key] = re.compile(pattern)
-
-    #i = 0
-    #while(True):
-    #    row = df_points.loc[i,:]
-    #    if row.FirstChar == "B":
-    #        pass
-    #    print(row)
-    #    i += 1
-
     print(df_points['FirstChar'].value_counts())
     df_points = df_points[df_points['FirstChar']=='B']
     df_task = df_points[df_points['FirstChar']=='C'].copy()
