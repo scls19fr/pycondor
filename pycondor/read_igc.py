@@ -147,7 +147,7 @@ def points_to_kml_with_yattag(df_points, df_task, outdir, filename_base, disp):
 @click.option('--z_mode', default='gps', help="z mode ('baro', 'gps')")
 @click.option('--outdir', default='',
         help="Output directory - default is 'script_directory\out'")
-@click.option('--disp/--no-disp', default=True)
+@click.option('--disp/--no-disp', default=False)
 def main(igc_filename, z_mode, outdir, disp):
     basepath = os.path.dirname(__file__)
     if outdir=='':
@@ -190,6 +190,7 @@ def main(igc_filename, z_mode, outdir, disp):
 
     print(df_points['FirstChar'].value_counts())
     df_points = df_points[df_points['FirstChar']=='B']
+    df_task = df_points[df_points['FirstChar']=='C'].copy()
     Npts = len(df_points)
     df_points.index = np.arange(Npts)
     #print(df_points)
@@ -240,9 +241,13 @@ def main(igc_filename, z_mode, outdir, disp):
     df_points = df_points.set_index('Time')
     #print(df_points)
 
-    df_task = df_points[df_points['Name'] != ""].copy()
-    df_task = df_task.reset_index()
-    #print(df_task)    
+    if len(df_task)==0:
+        df_task = df_points[df_points['Name'] != ""].copy()
+        df_task = df_task.reset_index()
+    else:
+        pass
+
+    print(df_task)    
 
     points_to_kml_with_yattag(df_points, df_task, outdir, filename_base, disp)
 
