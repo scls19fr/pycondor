@@ -50,6 +50,7 @@ def latlon2decimal(s):
         return(np.nan)
 
 def igc_b_line_to_tuple(s):
+    #s='B1301104728192N01041482EA0085500855'
     dat = [s[1:6+1], '0'+s[7:7+8], s[7+8:15+9], s[15+9:]]
     dat[0] = datetime.time(
         hour=int(dat[0][0:2]),
@@ -58,6 +59,15 @@ def igc_b_line_to_tuple(s):
     dat[1] = latlon2decimal(dat[1]) # Lat
     dat[2] = latlon2decimal(dat[2]) # Lon
     dat[3] = (dat[3][0], int(dat[3][1:6]), int(dat[3][6:11])) # Elevation ('A'|'V', z_baro, z_gps)  
+    return(dat)
+
+def igc_c_line_to_tuple(s):
+    #s='C4627617N01119600EBOLZANO'
+    dat = ['0'+s[1:1+8], s[1+8:1+8+9], s[1+8+9:]]
+    dat[0] = latlon2decimal(dat[0]) # Lat
+    dat[1] = latlon2decimal(dat[1]) # Lon
+    if dat[0] is np.nan or dat[1] is np.nan:
+        return(np.nan)
     return(dat)
 
 from task import task_to_string, calculate_center
@@ -148,7 +158,8 @@ def points_to_kml_with_yattag(df_points, df_task, outdir, filename_base, disp):
 @click.option('--outdir', default='',
         help="Output directory - default is 'script_directory\out'")
 @click.option('--disp/--no-disp', default=False)
-def main(igc_filename, z_mode, outdir, disp):
+@click.option('--use-c/--no-use-c', default=True)
+def main(igc_filename, z_mode, outdir, disp, use_c):
     basepath = os.path.dirname(__file__)
     if outdir=='':
         outdir = os.path.join(basepath, 'out')
@@ -158,12 +169,13 @@ def main(igc_filename, z_mode, outdir, disp):
 
     filename = igc_filename
     filename_base, filename_ext = os.path.splitext(os.path.basename(filename))
-    df_points = pd.read_csv(filename, header=None, names=['Data'])
-    df_points['FirstChar'] = df_points['Data'].map(lambda s: s[0])
+    df_all = pd.read_csv(filename, header=None, names=['Data'])
+    df_all['FirstChar'] = df_all['Data'].map(lambda s: s[0])
 
-    print(df_points['FirstChar'].value_counts())
-    df_points = df_points[df_points['FirstChar']=='B']
-    df_task = df_points[df_points['FirstChar']=='C'].copy()
+    print(df_all['FirstChar'].value_counts())
+    df_task = df_all[df_all['FirstChar']=='C'].copy()
+
+    df_points = df_all[df_all['FirstChar']=='B'].copy()
     Npts = len(df_points)
     df_points.index = np.arange(Npts)
 
@@ -224,15 +236,23 @@ def main(igc_filename, z_mode, outdir, disp):
     df_points.loc[Npts-1, "Name"] = "Finish"
 
     df_points = df_points.set_index('Time')
-    print(df_points)
+    print("Points:\n%s" % df_points)
 
-    if len(df_task)==0:
+
+    if len(df_task)==0 or not use_c:
+        print("No C record - using first and last point")
         df_task = df_points[df_points['Name'] != ""].copy()
         df_task = df_task.reset_index()
     else:
-        pass
+        df_task['Data'] = df_task['Data'].map(igc_c_line_to_tuple)
+        df_task = df_task[df_task['Data'].notnull()].copy()
+        df_task.index = np.arange(len(df_task))
+        df_task['Lat'] = df_task['Data'].map(lambda t: t[0])
+        df_task['Lon'] = df_task['Data'].map(lambda t: t[1])
+        df_task['Name'] = df_task['Data'].map(lambda t: t[2])
+        df_task['Altitude'] = 0
 
-    print(df_task)    
+    print("Task:\n%s" % df_task)
 
     points_to_kml_with_yattag(df_points, df_task, outdir, filename_base, disp)
 
