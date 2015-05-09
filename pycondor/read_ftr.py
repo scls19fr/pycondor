@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from construct import Struct, Bytes, ULInt32, LFloat32, Array, CString, String
+from construct import Struct, Bytes, UBInt8, ULInt32, LFloat32, Array, CString, String, PascalString
 
 def read_ftr(filename, delete_keys=None):
     offset_size = 1859
@@ -29,11 +29,17 @@ def read_ftr(filename, delete_keys=None):
 
     ftr_struct = Struct("ftr_header",
         String("filetype", 4),
-        Bytes("unknown00", 136),
+        #Bytes("unknown00", 136),
+        #String("FirstName", 17),
+        Bytes("unknown00", 135),
         String("FirstName", 17),
         String("FamilyName", 17),
         String("Country", 17),
-        Bytes("unknown01", offset_size - 4 - 136 - 17 - 17 - 17),
+        String("RN", 8),
+        String("CN", 4),
+        Bytes("unknown02", 5),
+        String("Landscape", 17),
+        Bytes("unknown03", offset_size - 4 - 135 - 17 - 17 - 17 - 17 - 17),
         ULInt32("length"), # uint32 (4 bytes) @ 1859
         Array(lambda ctx: ctx.length, ftr_record_struct),
     )
@@ -56,8 +62,11 @@ def read_ftr(filename, delete_keys=None):
             if key in dat.keys():
                 del dat[key]
 
-    for key in ['FirstName', 'FamilyName', 'Country']:
-        dat[key] = dat[key].replace('\x06', '').replace('\x00', '')
+    for key in ['FirstName', 'FamilyName', 'Country', 'Landscape', 'RN', 'CN']:
+        length = ord(dat[key][0])
+        s = dat[key][1:]
+        dat[key] = s.replace('\x00', '')
+        assert len(dat[key])==length, "Length error with %s len=%d should be %d" % (s, len(s), length)
 
     return(dat)
 
@@ -83,6 +92,9 @@ def main(ftr_filename):
     dat = read_ftr(ftr_filename, delete_keys=['unknown00', 'unknown011'])
     df_ftr = dat['record']
     del dat['record']
+    for key, val in dat.items():
+        if 'unknow' in key:
+            del dat[key]
     print(dat)
     assert dat['length'] == 12019 # with 50km.ftr
 
@@ -92,14 +104,16 @@ def main(ftr_filename):
         h_dd = df_ftr['Alt'][dt_dd]
         print("Drawdown found at %s %s" % (dt_dd, h_dd))
 
-    fig, ax = plt.subplots(1, 1)
-    df_ftr['Alt'].plot(ax=ax)
-    ax.scatter(dt_dd, h_dd, c='r')
-    ax.annotate("%d m loss" % alt_diff, xy=(dt_dd, h_dd - 0.5 * alt_diff),
+    fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1)
+    ax1.plot(-df_ftr['PosX'], df_ftr['PosY'])
+    df_ftr['Alt'].plot(ax=ax2)
+    ax2.scatter(dt_dd, h_dd, c='r')
+    ax2.annotate("%d m loss" % alt_diff, xy=(dt_dd, h_dd - 0.5 * alt_diff),
         xytext=(dt_dd, h_dd - 4*alt_diff),
         arrowprops=dict(facecolor='black', shrink=0.005),
         horizontalalignment='center', verticalalignment='top'
     )
+    plt.tight_layout()
     plt.show()
 
 if __name__ == '__main__':
