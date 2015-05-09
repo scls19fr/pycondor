@@ -171,7 +171,8 @@ def main(ftr_filename, outdir, condor_path):
     
     filename_out = os.path.join(outdir, filename_base + '.xls')
     print("Output '%s'" % filename_out)
-    with pd.ExcelWriter(filename_out,  datetime_format='hh:mm:ss,000') as writer:
+    #with pd.ExcelWriter(filename_out,  datetime_format='hh:mm:ss.000') as writer:
+    with pd.ExcelWriter(filename_out) as writer:
         df_ftr.to_excel(writer, "Sheet1")
     
     plot_track(df_ftr)
