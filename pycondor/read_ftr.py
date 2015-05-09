@@ -12,6 +12,8 @@ import matplotlib.pyplot as plt
 
 from construct import Struct, Bytes, UBInt8, ULInt32, LFloat32, Array, CString, String, PascalString
 
+from constants_windows import paths_default
+
 def read_ftr(filename, delete_keys=None):
     offset_size = 1859
 
@@ -86,9 +88,22 @@ def drawdown(s_altitude, alt_diff):
     except:
         return
 
+def convert_coordinates(condor_path, dat):
+    from condor_dll import NaviConDLL
+    landscape = dat["Landscape"]
+    navicon_dll = NaviConDLL(condor_path)
+    navicon_dll.init(landscape)
+    df = dat['record']
+    t_ser = df.apply(lambda pt: navicon_dll.xy_to_lat_lon(pt['PosX', pt['PosY']]), axis=1)
+    df['Lat'] = t_ser.map(lambda t: t[0])
+    df['Lon'] = t_ser.map(lambda t: t[1])
+    return(df)
+
 @click.command()
 @click.argument('ftr_filename')
-def main(ftr_filename):
+@click.option("--outdir", default="", help="Output directory - default is 'script_directory\out'")
+@click.option("--condor_path", default="", help="Condor Soaring installation path - default is %s" % paths_default['Condor'])
+def main(ftr_filename, outdir, condor_path):
     dat = read_ftr(ftr_filename, delete_keys=['unknown00', 'unknown011'])
     df_ftr = dat['record']
     del dat['record']
@@ -97,6 +112,10 @@ def main(ftr_filename):
             del dat[key]
     print(dat)
     assert dat['length'] == 12019 # with 50km.ftr
+
+    df_ftr = convert_coordinates(condor_path, dat)
+    df_ftr.to_excel(os.path.join(outdir, "out.xls"))
+
 
     alt_diff = 100.0
     dt_dd = drawdown(df_ftr['Alt'], alt_diff)
