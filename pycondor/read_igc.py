@@ -166,7 +166,6 @@ def main(igc_filename, z_mode, outdir, disp):
     df_task = df_points[df_points['FirstChar']=='C'].copy()
     Npts = len(df_points)
     df_points.index = np.arange(Npts)
-    #print(df_points)
 
     #s = 'B1005364607690N00610358EA0000001265'
     #print(s)
@@ -177,10 +176,16 @@ def main(igc_filename, z_mode, outdir, disp):
 
     m = 100
     g = 9.81
+    first_date = datetime.date.today() # ToFix
     df_points['Time'] = s_tuple.map(lambda t: t[0])
     df_points['TimeSup'] = (df_points['Time'] < df_points['Time'].shift(1)).astype(int).cumsum()
-    #df_points['Deltatime'] = df_points['Time'] - df_points['Time'].shift(1)
-    df_points['Deltatime'] = 10 # seconds
+    df_points['Time'] = df_points['Time'].map(lambda t: datetime.datetime.combine(first_date, t))
+    df_points['Time'] = df_points['Time'] + df_points['TimeSup'] * datetime.timedelta(days=1)
+    df_points['Deltatime'] = df_points['Time'] - df_points['Time'].shift(1)
+    #df_points['Deltatime'] = df_points['Deltatime'].fillna(np.timedelta64(0, 's'))
+    df_points['Deltatime'] = df_points['Deltatime'] / np.timedelta64(1, 's')
+    print(df_points['Deltatime'].value_counts())
+    #df_points['Deltatime'] = 10 # seconds
     df_points['Lat'] = s_tuple.map(lambda t: t[1])
     df_points['Lon'] = s_tuple.map(lambda t: t[2])
     df_points['Lat2'] = df_points['Lat'].shift(1)
@@ -204,6 +209,13 @@ def main(igc_filename, z_mode, outdir, disp):
     Ep = m g z
     Ec = 1/2 m v^2
     Em = Ep + Ec
+
+    dEm / dt = m g dz/dt + d/dt (1/2 m v^2)
+
+    VzComp = ( dEm / dt) * 1 / (m * g)
+        = dz/dt + 1/(2*g) * d/dt(v^2)
+        = Vz + VzK
+        with VzK = 1/(2*g) * d/dt(v^2)
     
     """
 
@@ -212,7 +224,7 @@ def main(igc_filename, z_mode, outdir, disp):
     df_points.loc[Npts-1, "Name"] = "Finish"
 
     df_points = df_points.set_index('Time')
-    #print(df_points)
+    print(df_points)
 
     if len(df_task)==0:
         df_task = df_points[df_points['Name'] != ""].copy()
