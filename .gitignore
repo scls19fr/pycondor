@@ -53,5 +53,18 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+# Mac OS X
+.DS_Store
+
 # PyBuilder
 target/
+
+# out
+pycondor/out/*.png
+pycondor/out/*.csv
+pycondor/out/*.kml
+pycondor/out/*.fpl
+pycondor/samples/bex.fpl
+
+# SQLite Cache
+requests_cache.sqlite

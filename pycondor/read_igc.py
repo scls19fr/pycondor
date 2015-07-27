@@ -204,6 +204,7 @@ def main(igc_filename, z_mode, outdir, disp, use_c):
     df_points['Lon2'] = df_points['Lon'].shift(1)
     df_points['Speed'] = 1000 * df_points.apply(lambda pt: haversine_distance(pt['Lat'], pt['Lon'], pt['Lat2'], pt['Lon2']), axis=1) / df_points['Deltatime']
     df_points['Speed'] = df_points['Speed'].fillna(0.0)
+    df_points['Speed_km/h'] = df_points['Speed'] * 3.6
     df_points.drop(['Lat2', 'Lon2'], axis=1, inplace=True)
     df_points['Ec'] = 0.5 * m * df_points['Speed']**2 # kinetic energy
     df_points['Z_mode'] = s_tuple.map(lambda t: t[3][0])
@@ -237,6 +238,12 @@ def main(igc_filename, z_mode, outdir, disp, use_c):
 
     df_points = df_points.set_index('Time')
     print("Points:\n%s" % df_points)
+
+    print("Max speed: %f km/h" % df_points['Speed_km/h'].max())
+    print("Max Vz: %f" % df_points['Vz'].max())
+    print("Min Vz: %f" % df_points['Vz'].min())
+    print("Max Vz_comp: %f" % df_points['Vz_comp'].max())
+    print("Min Vz_comp: %f" % df_points['Vz_comp'].min())
 
 
     if len(df_task)==0 or not use_c:
