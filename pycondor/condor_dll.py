@@ -33,7 +33,7 @@ class NaviConDLL(WinDLL):
         if not os.path.isfile(trn_path):
             raise(Exception("Can't init landscape '%s' from '%s'" % (landscape, trn_path)))
 
-        return(self.NaviConInit(trn_path))
+        return(self.NaviConInit(trn_path.encode('utf-8')))
 
     def xy_max(self):
         return(self.GetMaxX(), self.GetMaxY())
