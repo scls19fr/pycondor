@@ -1,0 +1,66 @@
+Command,Default key,Remarks
+Bank left,LEFT,
+Bank right,RIGHT,
+Pitch down,UP,
+Pitch up,DOWN,
+Rudder left,Z,
+Rudder right,X,
+Rudder center,C,
+Airbrakes in,N,
+Airbrakes out,B,
+Flaps in,F,
+Flaps out,V,
+Trimmer up,DELETE,
+Trimmer down,INSERT,
+Trimmer center,F12,Release trimmer when using stick trimmer
+Gear,G,Toggle gear
+Wheel brake,PERIOD,
+Release,R,Release from towplane / winch
+Water,W,Pour out water ballast
+Smoke,T,Toggle wing tip smoke
+Miracle,Q,Recover damage / height
+Game menu,ESCAPE,Bring up the game menu
+Pause,P,
+Screenshot,S,Take screenshot
+Show classification,TAB,Show score board
+Show icons,MULTIPLY,Textual display of other planes data
+Lift helpers,H,Show thermals
+Task helpers,J,Show turnpoints and penalty zones
+HUD toggle,D,Show on-screen information
+Extend chat log,RSHIFT,Show last 20 chat messages
+Zoom in,ADD,
+Zoom out,SUBTRACT,
+Panel zoom,Y,Zoom to instrument panel
+View pan left,NUMPAD4,
+View pan right,NUMPAD6,
+View pan up,NUMPAD8,
+View pan down,NUMPAD2,
+View reset,NUMPAD5,Reset zoom and pan to default
+Cockpit view,F1,Default cockpit view
+External view,F2,
+Chase view,F3,Press multiple times for static plane cameras
+Tower view,F4,Press multiple times for turnpoint cameras
+Towplane view,F5,External view of towplane
+Fly-by view,F6,
+Padlock view,F7,Lock view to other planes
+Net player view,F8,External view of other planes
+
+Replay camera,F9,Toggle replay camera / manual camera
+Handheld screen 1,1,Moving map screen
+Handheld screen 2,2,Navigation screen
+Handheld screen 3,3,Final glide screen
+Handheld screen 4,4,Thermaling screen
+Handheld next screen,M,Cycle Handheld'ss screens
+Handheld zoom in,PRIOR,GPS map zoom in
+Handheld zoom out,NEXT,GPS map zoom out
+Vario volume up,RBRACKET,
+Vario volume down,LBRACKET,
+MC Up,HOME,McReady setting up
+MC Down,END,McReady setting down
+Lift/Cruise toggle,RCONTROL,Toggle vario / speed command
+Altimeter up,EQUALS,Decrease altimeter pressure
+Altimeter down,MINUS,Increase altimeter pressure
+Radio frequency up,BACKSLASH,
+Radio frequency down,APOSTROPHE,
+G Meter reset,0,Reset G meter min / max hands
+Send message,RETURN,Write MP message / write replay comment
