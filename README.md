@@ -130,7 +130,7 @@ You can get command line help using:
 							directory (it's also the name of a .trn file)
 	  --help                Show this message and exit.	
 	
-##Dependencies
+## Dependencies
 * Windows (because of DLL function calls to `NaviCon.dll`)
 * Python 2.7 or Python 3.4
 
